@@ -5,16 +5,73 @@ generator client {
     provider = "prisma-client-js"
 }
 
-datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
-}
+// datasource db {
+//   provider = "postgresql"
+//   url      = "postgresql://johndoe:mypassword@localhost:5432/mydb?schema=public"
+// }
+ datasource db {
+     provider = "postgresql"
+     url      = env("DATABASE_URL")
+ }
+
+model generation1 {
+id                Int      @id @default(autoincrement())
+generationnumber  BigInt 
+generationnumber2 BigInt 
+
+ }
+
+model pythonendpointrow {
+id                             Int      @id @default(autoincrement())
+generation                     Int
+pythonid                       BigInt
+ad_delivery_start_time         DateTime
+ad_delivery_stop_time          DateTime
+ad_snapshot_url                String
+bylines                        String
+delivery_by_region             String?
+demographic_distribution       String?
+publisher_platforms            String?
+ad_creative_bodies             String?
+ad_creative_link_captions      String?
+ad_creative_link_descriptions  String?
+ad_creative_link_titles        String?
+page_name                      String
+page_id                        String
+impressions_lower_bound        BigInt
+impressions_upper_bound        BigInt
+spend_lower_bound              BigInt
+spend_upper_bound              BigInt
+ }
+
+ model pythonendpointrow1 {
+id                             Int      @id @default(autoincrement())
+generation                     Int
+pythonid                       BigInt
+ad_delivery_start_time         DateTime
+ad_delivery_stop_time          DateTime
+ad_snapshot_url                String
+bylines                        String
+delivery_by_region             String?
+demographic_distribution       String?
+publisher_platforms            String?
+ad_creative_bodies             String?
+ad_creative_link_captions      String?
+ad_creative_link_descriptions  String?
+ad_creative_link_titles        String?
+page_name                      String
+page_id                        BigInt
+impressions_lower_bound        BigInt
+impressions_upper_bound        BigInt
+spend_lower_bound              BigInt
+spend_upper_bound              BigInt
+ }
+
 
 model Post {
     id        Int      @id @default(autoincrement())
     name      String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-
     @@index([name])
 }

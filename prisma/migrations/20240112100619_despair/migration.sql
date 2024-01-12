@@ -1,0 +1,15 @@
+-- AlterTable
+ALTER TABLE "pythonendpointrow" ALTER COLUMN "delivery_by_region" DROP NOT NULL,
+ALTER COLUMN "delivery_by_region" SET DATA TYPE TEXT,
+ALTER COLUMN "demographic_distribution" DROP NOT NULL,
+ALTER COLUMN "demographic_distribution" SET DATA TYPE TEXT,
+ALTER COLUMN "publisher_platforms" DROP NOT NULL,
+ALTER COLUMN "publisher_platforms" SET DATA TYPE TEXT,
+ALTER COLUMN "ad_creative_bodies" DROP NOT NULL,
+ALTER COLUMN "ad_creative_bodies" SET DATA TYPE TEXT,
+ALTER COLUMN "ad_creative_link_captions" DROP NOT NULL,
+ALTER COLUMN "ad_creative_link_captions" SET DATA TYPE TEXT,
+ALTER COLUMN "ad_creative_link_descriptions" DROP NOT NULL,
+ALTER COLUMN "ad_creative_link_descriptions" SET DATA TYPE TEXT,
+ALTER COLUMN "ad_creative_link_titles" DROP NOT NULL,
+ALTER COLUMN "ad_creative_link_titles" SET DATA TYPE TEXT;

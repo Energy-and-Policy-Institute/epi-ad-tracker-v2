@@ -25,11 +25,12 @@ export default function Home() {
                   <th className="px-5 py-2 outline">PYTHON_ID</th>
                   <th className="px-5 py-2 outline">BYLINES</th>
                   <th className="px-5 py-2 outline">
-                    Spending Lower estimate
+                    Spending lower estimate
                   </th>{" "}
                   <th className="px-5 py-2 outline">
-                    Spending Higher estimate
+                    Spending higher estimate
                   </th>
+                  {/* comment */}
                   {/* <th>Ad Snapshot URL</th>{" "} */}
                 </tr>{" "}
               </thead>{" "}

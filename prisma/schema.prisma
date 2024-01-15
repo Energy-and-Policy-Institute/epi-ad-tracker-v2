@@ -42,7 +42,61 @@ impressions_lower_bound        BigInt
 impressions_upper_bound        BigInt
 spend_lower_bound              BigInt
 spend_upper_bound              BigInt
- }
+}
+
+// stuff bellow this is mostly stuff that will be fetched in the form of a array/[]
+
+model regiondelivery {
+id                             Int  @id @default(autoincrement())
+generation                     Int
+pythonid                       BigInt
+percentage                     Decimal
+region                         String
+
+}
+
+model demographicdistribution {
+id                             Int  @id @default(autoincrement())
+generation                     Int
+pythonid                       BigInt
+percentage                     Decimal
+age                            String
+gender                         String 
+}
+
+model publisherplatform {
+id                             Int  @id @default(autoincrement())
+generation                     Int
+pythonid                       BigInt
+text                           String 
+}
+
+model adcreativebodies {
+id                             Int  @id @default(autoincrement())
+generation                     Int
+pythonid                       BigInt
+text                           String 
+}
+model adcreativelinkcaptions {
+id                             Int  @id @default(autoincrement())
+generation                     Int
+pythonid                       BigInt
+text                           String 
+}
+
+model adcreativelinkdescriptions{
+id                             Int  @id @default(autoincrement())
+generation                     Int
+pythonid                       BigInt
+text                           String 
+}
+
+model adcreativelinktitles {
+id                             Int  @id @default(autoincrement())
+generation                     Int
+pythonid                       BigInt
+text                           String 
+}
 
  model pythonendpointrow1 {
 id                             Int      @id @default(autoincrement())

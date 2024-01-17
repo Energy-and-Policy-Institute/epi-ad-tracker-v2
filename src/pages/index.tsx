@@ -9,10 +9,40 @@ export default function Home() {
   const pythonrows = api.python.getCurrentPythonRows.useQuery();
   console.log(pythonrows);
 
+  interface KeyValueMap {
+    [key: string]: string | number;
+  }
+
+  interface KeyValueMapRendererProps {
+    keyValueMap: KeyValueMap;
+  }
+
+  function KeyValueMapRenderer({ keyValueMap }: KeyValueMapRendererProps) {
+    return (
+      <div>
+        {Object.entries(keyValueMap).map(([key, value]) => (
+          <div key={key}>
+            <strong>{key}:</strong> {value}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Example usage
+  const myMap: KeyValueMap = {
+    name: "John",
+    age: 25,
+    city: "New York",
+  };
+
   function Table() {
     return (
       <div>
-        {" "}
+        <div>
+          <h1>Key-Value Map Renderer</h1>
+          <KeyValueMapRenderer keyValueMap={myMap} />
+        </div>{" "}
         {pythonrows.data?.length! > 0 && (
           <>
             <table>
@@ -30,8 +60,7 @@ export default function Home() {
                   <th className="px-5 py-2 outline">
                     Spending higher estimate
                   </th>
-                  {/* comment */}
-                  {/* <th>Ad Snapshot URL</th>{" "} */}
+                  <th>PAGE_ID</th>{" "}
                 </tr>{" "}
               </thead>{" "}
               <tbody>
@@ -52,7 +81,7 @@ export default function Home() {
                     <td className="px-5 py-2 outline">
                       {Number(row.spend_upper_bound)}
                     </td>
-                    {/* <td className="px-5 py-2 outline">{row.ad_snapshot_url}</td> */}
+                    <td className="px-5 py-2 outline">{row.page_id}</td>
                   </tr>
                 ))}{" "}
               </tbody>{" "}

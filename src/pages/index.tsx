@@ -1,49 +1,18 @@
-import { pythonendpointrow } from "@prisma/client";
-import Head from "next/head";
 import Link from "next/link";
-
 import { api } from "~/utils/api";
 
 export default function Home() {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
-  const pythonrows = api.python.getCurrentPythonRows.useQuery();
-  console.log(pythonrows);
+  // const pythonrows = api.python.getCurrentPythonRows.useQuery();
+  const country = api.python.getcountryRows.useQuery();
+  const company = api.python.getCompanyRows.useQuery({
+    text: "482100658584410",
+  });
 
-  interface KeyValueMap {
-    [key: string]: string | number;
-  }
-
-  interface KeyValueMapRendererProps {
-    keyValueMap: KeyValueMap;
-  }
-
-  function KeyValueMapRenderer({ keyValueMap }: KeyValueMapRendererProps) {
+  function SubTable() {
     return (
       <div>
-        {Object.entries(keyValueMap).map(([key, value]) => (
-          <div key={key}>
-            <strong>{key}:</strong> {value}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  // Example usage
-  const myMap: KeyValueMap = {
-    name: "John",
-    age: 25,
-    city: "New York",
-  };
-
-  function Table() {
-    return (
-      <div>
-        <div>
-          <h1>Key-Value Map Renderer</h1>
-          <KeyValueMapRenderer keyValueMap={myMap} />
-        </div>{" "}
-        {pythonrows.data?.length! > 0 && (
+        {company.data?.length! > 0 && (
           <>
             <table>
               {" "}
@@ -51,37 +20,76 @@ export default function Home() {
                 {" "}
                 <tr className="outline">
                   {" "}
-                  <th className="px-5 py-2 outline">ID</th>
-                  <th className="px-5 py-2 outline">PYTHON_ID</th>
-                  <th className="px-5 py-2 outline">BYLINES</th>
+                  <th className="px-5 py-2 outline">STATE</th>
+                  <th className="px-5 py-2 outline">SPENDING</th>
+                </tr>{" "}
+              </thead>{" "}
+              <tbody>
+                {" "}
+                {company.data!.map((row) => (
+                  <tr
+                    key={row.id}
+                    // className="center text-center font-bold outline"
+                  >
+                    <td className="px-5 py-2 outline">
+                      {row.location.toString()}
+                    </td>
+                    <td className="px-5 py-2 outline">
+                      ${Number(row.lowerspend)} -{Number(row.upperspend)}
+                    </td>
+                  </tr>
+                ))}{" "}
+              </tbody>{" "}
+            </table>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  function Table() {
+    return (
+      <div>
+        {country.data?.length! > 0 && (
+          <>
+            <table>
+              {" "}
+              <thead>
+                {" "}
+                <tr className="outline">
+                  {" "}
+                  <th className="px-5 py-2 outline">COMPANY</th>
+                  <th className="px-5 py-2 outline">ADS RAN</th>
                   <th className="px-5 py-2 outline">
                     Spending lower estimate
                   </th>{" "}
                   <th className="px-5 py-2 outline">
                     Spending higher estimate
                   </th>
-                  <th>PAGE_ID</th>{" "}
                 </tr>{" "}
               </thead>{" "}
               <tbody>
                 {" "}
-                {pythonrows.data!.map((row) => (
+                {country.data!.map((row) => (
                   <tr
                     key={row.id}
                     // className="center text-center font-bold outline"
                   >
-                    <td className="px-5 py-2 outline">{row.id.toString()}</td>
                     <td className="px-5 py-2 outline">
-                      {row.pythonid.toString()}
+                      <Link
+                        href="/company/[id]"
+                        as={"/company/" + row.company.toString()}
+                      >
+                        {row.company.toString()}
+                      </Link>
                     </td>
-                    <td className="px-5 py-2 outline">{row.bylines}</td>
+                    <td className="px-5 py-2 outline">{row.numberOfAds}</td>
                     <td className="px-5 py-2 outline">
-                      {Number(row.spend_lower_bound)}
+                      {Number(row.lowerspend)}
                     </td>
                     <td className="px-5 py-2 outline">
-                      {Number(row.spend_upper_bound)}
+                      {Number(row.upperspend)}
                     </td>
-                    <td className="px-5 py-2 outline">{row.page_id}</td>
                   </tr>
                 ))}{" "}
               </tbody>{" "}
@@ -97,8 +105,11 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           <p className="text-2xl text-white">
-            {pythonrows.data ? <Table /> : "Loading tRPC query..."}
+            {country.data ? <Table /> : "Loading tRPC query..."}
           </p>
+          {/* <p className="text-2xl text-white">
+            {company.data ? <SubTable /> : "Loading tRPC query..."}
+          </p> */}
         </div>
       </main>
     </>

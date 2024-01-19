@@ -22,11 +22,11 @@ generationnumber2 BigInt
  }
 
 model pythonendpointrow {
-id                             Int      @id @default(autoincrement())
+id                             Int         @id @default(autoincrement())
 generation                     Int
-pythonid                       BigInt
-ad_delivery_start_time         DateTime
-ad_delivery_stop_time          DateTime
+pythonid                       BigInt      @default(0)
+ad_delivery_start_time         String?
+ad_delivery_stop_time          String?
 ad_snapshot_url                String
 bylines                        String
 delivery_by_region             String?
@@ -42,6 +42,38 @@ impressions_lower_bound        BigInt
 impressions_upper_bound        BigInt
 spend_lower_bound              BigInt
 spend_upper_bound              BigInt
+}
+
+model CountryRows {
+        id           Int          @id @default(autoincrement())
+        company      String   
+        upperspend   Int
+        lowerspend   Int
+        numberOfAds  Int
+}
+
+model CompanyRows {
+        id           Int          @id @default(autoincrement())
+        company      String   
+        location     String   
+        upperspend   Int
+        lowerspend   Int
+        numberOfAds  Int
+}
+
+
+model CountryDataDump {
+    id                             Int      @id @default(autoincrement())
+    bigmap                         String   @db.Text
+}
+
+
+
+model CompanyDataDump1 {
+    id                             Int      @id @default(autoincrement())
+    bigmap                         String   @db.Text
+    companyname1                   String
+
 }
 
 // stuff bellow this is mostly stuff that will be fetched in the form of a array/[]

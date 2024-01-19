@@ -1,7 +1,7 @@
-import { pythonendpointrow, regiondelivery } from "@prisma/client";
+import { pythonendpointrow } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { map } from "@trpc/server/observable";
-import { RegionDataCell, RegionDataHive, RegionData } from "randomtypes";
+import { RegionDataCell, RegionDataHive, regiondelivery } from "randomtypes";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -11,7 +11,9 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const pythonRouter = createTRPCRouter({
   getcountryRows: publicProcedure.query(async ({ ctx }) => {
-    const country = await ctx.db.countryRows.findMany({});
+    const country = await ctx.db.countryRows.findMany({
+      orderBy: { upperspend: "desc" },
+    });
     return country;
   }),
   getCompanyRows: publicProcedure
@@ -19,6 +21,7 @@ export const pythonRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const company = await ctx.db.companyRows.findMany({
         where: { company: String(input.text) },
+        orderBy: { upperspend: "desc" },
       });
       return company;
     }),

@@ -5,10 +5,12 @@ export default function Home() {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
   //const pythonrows = api.python.getCurrentPythonRows.useQuery();
   const country = api.python.getcountryRows.useQuery();
+  const sad: number = 1.0e-5;
 
   function Table() {
     return (
       <div>
+        {/* <>{sad}</> */}
         {country.data?.length! > 0 && (
           <>
             <table>

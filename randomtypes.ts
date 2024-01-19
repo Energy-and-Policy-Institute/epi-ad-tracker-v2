@@ -14,17 +14,13 @@ export interface CellData {
   number_of_ads: number;
 }
 
-export interface StateData {
-  [key: string]: CellData;
-}
-
-export interface RegionData {
-  AmericaCell: CellData;
-  stateCells: {
-    [key: string]: StateData;
-  };
-  // You can add more properties if needed
-}
+export type regiondelivery = {
+  id: Number;
+  generation: number;
+  pythonid: BigInt;
+  percentage: number;
+  region: String;
+};
 
 export type InputPythonRow = {
   id: Number;
@@ -42,10 +38,10 @@ export type InputPythonRow = {
   ad_creative_link_titles: String;
   page_name: String;
   page_id: String;
-  impressions_lower_bound: BigInt;
-  impressions_upper_bound: BigInt;
-  spend_lower_bound: BigInt;
-  spend_upper_bound: BigInt;
-  ad_start_month: Number;
-  ad_start_year: Number;
+  impressions_lower_bound: number;
+  impressions_upper_bound: number;
+  spend_lower_bound: number;
+  spend_upper_bound: number;
+  ad_start_month: number;
+  ad_start_year: number;
 };

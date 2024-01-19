@@ -59,14 +59,12 @@ export default async function handler(
             ),
             page_id: String(InputPythonRow1.page_id),
             page_name: String(InputPythonRow1.page_name),
-            impressions_lower_bound: Number(
-              InputPythonRow1.impressions_lower_bound,
-            ),
-            impressions_upper_bound: Number(
-              InputPythonRow1.impressions_upper_bound,
-            ),
-            spend_lower_bound: Number(InputPythonRow1.spend_lower_bound),
-            spend_upper_bound: Number(InputPythonRow1.spend_upper_bound),
+            impressions_lower_bound: InputPythonRow1.impressions_lower_bound,
+
+            impressions_upper_bound: InputPythonRow1.impressions_upper_bound,
+
+            spend_lower_bound: InputPythonRow1.spend_lower_bound,
+            spend_upper_bound: InputPythonRow1.spend_upper_bound,
           },
         });
       }

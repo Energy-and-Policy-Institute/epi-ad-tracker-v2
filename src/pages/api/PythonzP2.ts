@@ -1,42 +1,8 @@
-import { pythonendpointrow, regiondelivery } from "@prisma/client";
+import { pythonendpointrow } from "@prisma/client";
+import { regiondelivery } from "randomtypes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { db } from "~/server/db";
-import { RegionDataCell, RegionDataHive, RegionData } from "randomtypes";
-import { Console } from "console";
-import { stat } from "fs";
-
-// async function LoopStateCells(
-//   stateCells: Map<String, RegionDataCell>,
-//   companyName: String,
-// ) {
-//   for (const [key, value] of stateCells) {
-//     console.log("ADDING COUNTRYROW");
-//     console.log(key, value);
-//     try {
-//       await db.companyRows.create({
-//         data: {
-//           company: String(companyName),
-//           location: String(key),
-//           upperspend: value.upperbound,
-//           lowerspend: value.lowerbound,
-//           numberOfAds: value.number_of_ads,
-//         },
-//       });
-//       console.log("ADDED COUNTRYROW");
-//     } catch (error) {
-//       console.error("Error writing to the database:", error);
-//     }
-//   }
-// }
-
-async function ADD_TO_MAP(
-  stateCells1: Map<String, RegionDataCell>,
-  key: String,
-  value: RegionDataCell,
-): Promise<Map<String, RegionDataCell>> {
-  stateCells1.set(key, value);
-  return stateCells1;
-}
+import { RegionDataCell, RegionDataHive } from "randomtypes";
 
 export default async function handler(
   req: NextApiRequest,
@@ -118,25 +84,21 @@ export default async function handler(
             // if we already have the state in the statemap
             if (stateCells1.has(theRowArray[q]?.region!) === true) {
               stateCells1.get(theRowArray[q]?.region!)!.lowerbound =
-                Number(stateCells1.get(theRowArray[q]?.region!)?.lowerbound!) +
-                Number(value[o]!.spend_lower_bound) *
-                  Number(theRowArray[q]?.percentage);
+                stateCells1.get(theRowArray[q]?.region!)?.lowerbound! +
+                value[o]!.spend_lower_bound * theRowArray[q]?.percentage!;
 
               stateCells1.get(theRowArray[q]?.region!)!.upperbound =
-                Number(stateCells1.get(theRowArray[q]?.region!)?.upperbound!) +
-                Number(value[o]!.spend_upper_bound) *
-                  Number(theRowArray[q]?.percentage);
+                stateCells1.get(theRowArray[q]?.region!)?.upperbound! +
+                value[o]!.spend_upper_bound * theRowArray[q]?.percentage!;
 
               stateCells1.get(theRowArray[q]?.region!)!.number_of_ads =
                 stateCells1.get(theRowArray[q]?.region!)?.number_of_ads! + 1;
             } else {
               let region: RegionDataCell = {
                 upperbound:
-                  Number(value[o]?.spend_upper_bound) *
-                  Number(theRowArray[q]?.percentage),
+                  value[o]?.spend_upper_bound! * theRowArray[q]?.percentage!,
                 lowerbound:
-                  Number(value[o]?.spend_lower_bound) *
-                  Number(theRowArray[q]?.percentage),
+                  value[o]?.spend_lower_bound! * theRowArray[q]?.percentage!,
                 number_of_ads: 1,
               };
               //  const newstateCells = await ADD_TO_MAP(
@@ -154,10 +116,10 @@ export default async function handler(
           }
         }
 
-        let CompanyDataHive: RegionDataHive = {
-          AmericaCell: AmericaCell1,
-          stateCells: stateCells1,
-        };
+        // let CompanyDataHive: RegionDataHive = {
+        //   AmericaCell: AmericaCell1,
+        //   stateCells: stateCells1,
+        // };
 
         //  let bigmap2 = JSON.stringify(CompanyDataHive);
 
@@ -202,6 +164,28 @@ export default async function handler(
           console.log("ADDING COUNTRYROW");
           console.log(key, value);
           try {
+            // if (stateValue.upperbound === 0) {
+            //   await db.companyRows.create({
+            //     data: {
+            //       company: String(key),
+            //       location: String(stateKey),
+            //       upperspend: 0.99,
+            //       lowerspend: stateValue.lowerbound,
+            //       numberOfAds: stateValue.number_of_ads,
+            //     },
+            //   });
+            // } else {
+            //   await db.companyRows.create({
+            //     data: {
+            //       company: String(key),
+            //       location: String(stateKey),
+            //       upperspend: stateValue.upperbound,
+            //       lowerspend: stateValue.lowerbound,
+            //       numberOfAds: stateValue.number_of_ads,
+            //     },
+            //   });
+            // }
+
             await db.companyRows.create({
               data: {
                 company: String(key),

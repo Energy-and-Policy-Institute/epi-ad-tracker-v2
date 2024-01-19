@@ -9,28 +9,6 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 // [{'percentage': '0.000545', 'region': 'Idaho'}, {'percentage': '0.999455', 'region': 'Washington'}]
 //calulate WITH PERCENTAGE
 
-const serializeRegionDataCell = (
-  cell: RegionDataCell,
-): Record<string, number> => {
-  return {
-    upperbound: cell.upperbound,
-    lowerbound: cell.lowerbound,
-    number_of_ads: cell.number_of_ads,
-  };
-};
-
-const serializeRegionDataHive = (hive: RegionDataHive): Record<string, any> => {
-  return {
-    AmericaCell: serializeRegionDataCell(hive.AmericaCell),
-    stateCells: Object.fromEntries(
-      Array.from(hive.stateCells.entries()).map(([key, value]) => [
-        key,
-        serializeRegionDataCell(value),
-      ]),
-    ),
-  };
-};
-
 export const pythonRouter = createTRPCRouter({
   getcountryRows: publicProcedure.query(async ({ ctx }) => {
     const country = await ctx.db.countryRows.findMany({});
@@ -222,30 +200,11 @@ export const pythonRouter = createTRPCRouter({
         stateCells: stateCells1,
       };
 
-      //  let bigmap2 = JSON.stringify(CompanyDataHive);
-      let bigmap2 = JSON.stringify(serializeRegionDataHive(CompanyDataHive));
-      // console.log(bigmap2);
-      //    await ctx.db.companyDataDump1.create({
-      //      data: {
-      //        bigmap: bigmap2,
-      //        companyname1: String(key),
-      //      },
-      //    });
-
       mapOfCompaniesWStates.set(key, CompanyDataHive);
       // console.log("maptype is", typeof mapOfCompaniesWStates);
       // console.log("Is it a Map?", mapOfCompaniesWStates instanceof Map);
     }
     //  console.log(mapOfCompaniesWStates);
-
-    let bigmap1 = JSON.stringify(
-      Object.fromEntries(
-        Array.from(mapOfCompaniesWStates.entries()).map(([key, value]) => [
-          key,
-          serializeRegionDataHive(value),
-        ]),
-      ),
-    );
 
     //  for (const [key, value] of mapOfCompaniesWStates) {
     //    console.log(key);

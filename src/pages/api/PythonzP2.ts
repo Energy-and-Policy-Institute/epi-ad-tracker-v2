@@ -52,7 +52,9 @@ export default async function handler(
 
           try {
             theRowArray = JSON.parse(theRow!);
-          } catch (error) {}
+          } catch (error) {
+            console.log(error);
+          }
 
           if (true) {
             AmericaCell1.lowerbound =
@@ -62,21 +64,27 @@ export default async function handler(
             AmericaCell1.number_of_ads = AmericaCell1.number_of_ads + 1;
 
             for (let q: number = 0; q < theRowArray.length; q++) {
+              let percentage = theRowArray[q]?.percentage;
+
               if (stateCells1.has(theRowArray[q]?.region!) === true) {
                 stateCells1.get(theRowArray[q]?.region!)!.lowerbound =
-                  stateCells1.get(theRowArray[q]?.region!)?.lowerbound! +
-                  Number(value[o]!.spend_lower_bound);
+                  (stateCells1.get(theRowArray[q]?.region!)?.lowerbound! +
+                    Number(value[o]!.spend_lower_bound)) *
+                  Number(percentage);
 
                 stateCells1.get(theRowArray[q]?.region!)!.upperbound =
-                  stateCells1.get(theRowArray[q]?.region!)?.upperbound! +
-                  Number(value[o]!.spend_upper_bound);
+                  (stateCells1.get(theRowArray[q]?.region!)?.upperbound! +
+                    Number(value[o]!.spend_upper_bound)) *
+                  Number(percentage);
 
                 stateCells1.get(theRowArray[q]?.region!)!.number_of_ads =
                   stateCells1.get(theRowArray[q]?.region!)?.number_of_ads! + 1;
               } else {
                 let region: RegionDataCell = {
-                  upperbound: Number(value[o]?.spend_upper_bound),
-                  lowerbound: Number(value[o]?.spend_lower_bound),
+                  upperbound:
+                    Number(value[o]?.spend_upper_bound) * Number(percentage),
+                  lowerbound:
+                    Number(value[o]?.spend_lower_bound) * Number(percentage),
                   number_of_ads: 1,
                 };
                 stateCells1.set(theRowArray[q]?.region!, region);

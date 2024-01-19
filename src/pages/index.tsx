@@ -3,49 +3,8 @@ import { api } from "~/utils/api";
 
 export default function Home() {
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
-  // const pythonrows = api.python.getCurrentPythonRows.useQuery();
+  //const pythonrows = api.python.getCurrentPythonRows.useQuery();
   const country = api.python.getcountryRows.useQuery();
-  const company = api.python.getCompanyRows.useQuery({
-    text: "482100658584410",
-  });
-
-  function SubTable() {
-    return (
-      <div>
-        {company.data?.length! > 0 && (
-          <>
-            <table>
-              {" "}
-              <thead>
-                {" "}
-                <tr className="outline">
-                  {" "}
-                  <th className="px-5 py-2 outline">STATE</th>
-                  <th className="px-5 py-2 outline">SPENDING</th>
-                </tr>{" "}
-              </thead>{" "}
-              <tbody>
-                {" "}
-                {company.data!.map((row) => (
-                  <tr
-                    key={row.id}
-                    // className="center text-center font-bold outline"
-                  >
-                    <td className="px-5 py-2 outline">
-                      {row.location.toString()}
-                    </td>
-                    <td className="px-5 py-2 outline">
-                      ${Number(row.lowerspend)} -{Number(row.upperspend)}
-                    </td>
-                  </tr>
-                ))}{" "}
-              </tbody>{" "}
-            </table>
-          </>
-        )}
-      </div>
-    );
-  }
 
   function Table() {
     return (

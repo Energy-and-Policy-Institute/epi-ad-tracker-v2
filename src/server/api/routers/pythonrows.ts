@@ -12,99 +12,15 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 export const pythonRouter = createTRPCRouter({
   getcountryRows: publicProcedure.query(async ({ ctx }) => {
     const country = await ctx.db.countryRows.findMany({});
-    // console.log(mapOfCompaniesWStates);
     return country;
   }),
   getCompanyRows: publicProcedure
     .input(z.object({ text: z.string() }))
     .query(async ({ ctx, input }) => {
-      // console.log("input", input, typeof input);
-      // const allcompanies = await ctx.db.companyDataDump1.findMany({});
-      // console.log("allcompanies");
-      // console.log(typeof allcompanies[0]?.companyname1);
       const company = await ctx.db.companyRows.findMany({
         where: { company: String(input.text) },
       });
-
-      // console.log("prismacomp", company1);
-
-      //  let companyOBJ: RegionDataHive = await JSON.parse(company1!.bigmap);
-      // console.log("actualobj");
-      // console.log(regionData);
       return company;
-    }),
-
-  getCountryDump: publicProcedure.query(async ({ ctx }) => {
-    const country = await ctx.db.countryDataDump.findFirst({});
-    let mapOfCompaniesWStates: Map<String, RegionDataHive> = await JSON.parse(
-      country?.bigmap!,
-    );
-    // console.log(mapOfCompaniesWStates);
-    return mapOfCompaniesWStates;
-  }),
-  getCountryDumpV2: publicProcedure.query(async ({ ctx }) => {
-    const country = await ctx.db.countryDataDump.findFirst({});
-    let mapOfCompaniesWStates: Map<String, RegionDataHive> = JSON.parse(
-      country?.bigmap!,
-    );
-
-    console.log(" countrycountrydump2", country);
-    console.log("maptype palokiV2 is", typeof mapOfCompaniesWStates);
-    console.log("Is it a Map?", mapOfCompaniesWStates instanceof Map);
-
-    // console.log(mapOfCompaniesWStates);
-
-    console.log("maptype firstforloopV2 is", typeof mapOfCompaniesWStates);
-    console.log("Is it a Map?", mapOfCompaniesWStates instanceof Map);
-    for (const [key, value] of mapOfCompaniesWStates) {
-      await ctx.db.countryRows.create({
-        data: {
-          company: String(key),
-          upperspend: value.AmericaCell.upperbound,
-          lowerspend: value.AmericaCell.lowerbound,
-          numberOfAds: value.AmericaCell.number_of_ads,
-        },
-      });
-
-      // console.log(key);
-      // console.log(value);
-      let value1 = value.stateCells;
-      let key1 = key;
-      for (const [key, value] of value1) {
-        // console.log(key, value);
-        await ctx.db.companyRows.create({
-          data: {
-            company: String(key1),
-            location: String(key),
-            upperspend: value.upperbound,
-            lowerspend: value.lowerbound,
-            numberOfAds: value.number_of_ads,
-          },
-        });
-      }
-    }
-
-    return mapOfCompaniesWStates;
-  }),
-
-  getCompany: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(async ({ ctx, input }) => {
-      // console.log("input", input, typeof input);
-      // const allcompanies = await ctx.db.companyDataDump1.findMany({});
-      // console.log("allcompanies");
-      // console.log(typeof allcompanies[0]?.companyname1);
-      const company1 = await ctx.db.companyDataDump1.findFirst({
-        where: { companyname1: String(input.text) },
-      });
-
-      // console.log("prismacomp", company1);
-
-      //  let companyOBJ: RegionDataHive = await JSON.parse(company1!.bigmap);
-      const regionData: RegionDataHive = await JSON.parse(company1!.bigmap);
-      // console.log("actualobj");
-      // console.log(regionData);
-      return regionData;
     }),
 
   getCurrentPythonRows: publicProcedure.query(async ({ ctx }) => {
@@ -210,17 +126,17 @@ export const pythonRouter = createTRPCRouter({
     //    console.log(key);
     //    console.log(value);
     //    await ctx.db.countryRows.create({
-    //    data: {
-    //      company: String(key),
-    //      upperspend: value.AmericaCell.upperbound,
-    //      lowerspend: value.AmericaCell.lowerbound,
-    //      numberOfAds: value.AmericaCell.number_of_ads,
-    //    },
+    //      data: {
+    //        company: String(key),
+    //        upperspend: value.AmericaCell.upperbound,
+    //        lowerspend: value.AmericaCell.lowerbound,
+    //        numberOfAds: value.AmericaCell.number_of_ads,
+    //      },
     //    });
-    //
+
     //    let value1 = value;
     //    let key1 = key;
-    //
+
     //    for (const [key, value] of value1.stateCells) {
     //      console.log(key, value);
     //      await ctx.db.companyRows.create({

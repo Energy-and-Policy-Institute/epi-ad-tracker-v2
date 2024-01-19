@@ -1,7 +1,42 @@
+import { pythonendpointrow, regiondelivery } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { db } from "~/server/db";
-import { pythonendpointrow, regiondelivery } from "@prisma/client";
 import { RegionDataCell, RegionDataHive, RegionData } from "randomtypes";
+import { Console } from "console";
+import { stat } from "fs";
+
+// async function LoopStateCells(
+//   stateCells: Map<String, RegionDataCell>,
+//   companyName: String,
+// ) {
+//   for (const [key, value] of stateCells) {
+//     console.log("ADDING COUNTRYROW");
+//     console.log(key, value);
+//     try {
+//       await db.companyRows.create({
+//         data: {
+//           company: String(companyName),
+//           location: String(key),
+//           upperspend: value.upperbound,
+//           lowerspend: value.lowerbound,
+//           numberOfAds: value.number_of_ads,
+//         },
+//       });
+//       console.log("ADDED COUNTRYROW");
+//     } catch (error) {
+//       console.error("Error writing to the database:", error);
+//     }
+//   }
+// }
+
+async function ADD_TO_MAP(
+  stateCells1: Map<String, RegionDataCell>,
+  key: String,
+  value: RegionDataCell,
+): Promise<Map<String, RegionDataCell>> {
+  stateCells1.set(key, value);
+  return stateCells1;
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,14 +44,17 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     try {
+      // Process a POST request
       await db.companyRows.deleteMany({});
       await db.countryRows.deleteMany({});
 
+      // let arrayOfCompanies: String[] = [];
       let mapOfCompanies: Map<String, pythonendpointrow[]> = new Map<
         string,
         pythonendpointrow[]
       >();
 
+      //key is company I wanna say
       let mapOfCompaniesWStates: Map<String, RegionDataHive> = new Map<
         string,
         RegionDataHive
@@ -43,53 +81,67 @@ export default async function handler(
           number_of_ads: 0,
         };
 
-        let stateCells1: Map<String, RegionDataCell> = new Map();
+        // let stateCells1: Map<String, RegionDataCell[]> = new Map();
+        let stateCells1: Map<String, RegionDataCell> = new Map<
+          String,
+          RegionDataCell
+        >();
 
         for (let o: number = 0; o < value.length; o++) {
+          // Parse the JSON string
           let theRow = value[o]?.delivery_by_region;
+          // let theRowArray: regiondelivery[] = JSON.parse(theRow!);
 
           let theRowArray: regiondelivery[] = [];
 
           try {
             theRowArray = JSON.parse(theRow!);
           } catch (error) {
-            console.log(error);
+            // console.error("Error parsing JSON:", error);
           }
 
-          if (true) {
-            AmericaCell1.lowerbound =
-              AmericaCell1.lowerbound + Number(value[o]!.spend_lower_bound);
-            AmericaCell1.upperbound =
-              AmericaCell1.upperbound + Number(value[o]!.spend_upper_bound);
-            AmericaCell1.number_of_ads = AmericaCell1.number_of_ads + 1;
+          // Continue with the rest of the code...
 
-            for (let q: number = 0; q < theRowArray.length; q++) {
-              let percentage = theRowArray[q]?.percentage;
+          // const ShallYouPass = await IsNaN(theRowArray);
 
-              if (stateCells1.has(theRowArray[q]?.region!) === true) {
-                stateCells1.get(theRowArray[q]?.region!)!.lowerbound =
-                  (stateCells1.get(theRowArray[q]?.region!)?.lowerbound! +
-                    Number(value[o]!.spend_lower_bound)) *
-                  Number(percentage);
+          // if (ShallYouPass === false)
 
-                stateCells1.get(theRowArray[q]?.region!)!.upperbound =
-                  (stateCells1.get(theRowArray[q]?.region!)?.upperbound! +
-                    Number(value[o]!.spend_upper_bound)) *
-                  Number(percentage);
+          AmericaCell1.lowerbound =
+            AmericaCell1.lowerbound + Number(value[o]!.spend_lower_bound);
+          AmericaCell1.upperbound =
+            AmericaCell1.upperbound + Number(value[o]!.spend_upper_bound);
+          AmericaCell1.number_of_ads = AmericaCell1.number_of_ads + 1;
 
-                stateCells1.get(theRowArray[q]?.region!)!.number_of_ads =
-                  stateCells1.get(theRowArray[q]?.region!)?.number_of_ads! + 1;
-              } else {
-                let region: RegionDataCell = {
-                  upperbound:
-                    Number(value[o]?.spend_upper_bound) * Number(percentage),
-                  lowerbound:
-                    Number(value[o]?.spend_lower_bound) * Number(percentage),
-                  number_of_ads: 1,
-                };
-                stateCells1.set(theRowArray[q]?.region!, region);
-              }
+          for (let q: number = 0; q < theRowArray.length; q++) {
+            if (stateCells1.has(theRowArray[q]?.region!) === true) {
+              stateCells1.get(theRowArray[q]?.region!)!.lowerbound =
+                stateCells1.get(theRowArray[q]?.region!)?.lowerbound! +
+                Number(value[o]!.spend_lower_bound);
+
+              stateCells1.get(theRowArray[q]?.region!)!.upperbound =
+                stateCells1.get(theRowArray[q]?.region!)?.upperbound! +
+                Number(value[o]!.spend_upper_bound);
+
+              stateCells1.get(theRowArray[q]?.region!)!.number_of_ads =
+                stateCells1.get(theRowArray[q]?.region!)?.number_of_ads! + 1;
+            } else {
+              let region: RegionDataCell = {
+                upperbound: Number(value[o]?.spend_upper_bound),
+                lowerbound: Number(value[o]?.spend_lower_bound),
+                number_of_ads: 1,
+              };
+              //  const newstateCells = await ADD_TO_MAP(
+              //    stateCells1,
+              //    theRowArray[q]?.region!,
+              //    region,
+              //  );
+              //
+              //  stateCells1 = newstateCells;
+              stateCells1.set(theRowArray[q]?.region!, region);
+              console.log("sc size", stateCells1.size);
             }
+            // console.log("maptype is", typeof mapOfCompaniesWStates);
+            // console.log("Is it a Map?", mapOfCompaniesWStates instanceof Map);
           }
         }
 
@@ -98,12 +150,29 @@ export default async function handler(
           stateCells: stateCells1,
         };
 
-        mapOfCompaniesWStates.set(key, CompanyDataHive);
+        //  let bigmap2 = JSON.stringify(CompanyDataHive);
+
+        // console.log(bigmap2);
+        //    await db.companyDataDump1.create({
+        //      data: {
+        //        bigmap: bigmap2,
+        //        companyname1: String(key),
+        //      },
+        //    });
+
+        mapOfCompaniesWStates.set(key, {
+          AmericaCell: AmericaCell1,
+          stateCells: stateCells1,
+        });
+        console.log(stateCells1);
+        // console.log("maptype is", typeof mapOfCompaniesWStates);
+        // console.log("Is it a Map?", mapOfCompaniesWStates instanceof Map);
       }
+      // console.log(mapOfCompaniesWStates);
 
       for (const [key, value] of mapOfCompaniesWStates) {
-        console.log(key);
-        console.log(value);
+        // console.log(key);
+        // console.log(value);
         await db.countryRows.create({
           data: {
             company: String(key),
@@ -113,25 +182,43 @@ export default async function handler(
           },
         });
 
-        let value1 = value;
-        let key1 = key;
+        // let value1 = value;
+        // let companyname = key;
 
-        for (const [key, value] of value1.stateCells) {
+        // console.log("size", value.stateCells.size);
+
+        // await LoopStateCells(value1.stateCells, companyname);
+
+        for (const [stateKey, stateValue] of value.stateCells) {
+          console.log("ADDING COUNTRYROW");
           console.log(key, value);
-          await db.companyRows.create({
-            data: {
-              company: String(key1),
-              location: String(key),
-              upperspend: value.upperbound,
-              lowerspend: value.lowerbound,
-              numberOfAds: value.number_of_ads,
-            },
-          });
+          try {
+            await db.companyRows.create({
+              data: {
+                company: String(key),
+                location: String(stateKey),
+                upperspend: stateValue.upperbound,
+                lowerspend: stateValue.lowerbound,
+                numberOfAds: stateValue.number_of_ads,
+              },
+            });
+            console.log("ADDED COUNTRYROW");
+          } catch (error) {
+            console.error("Error writing to the database:", error);
+          }
         }
       }
 
-      // Respond to the client
-      res.status(200).json({ message: "Hello from the API endpoint!" });
+      //  console.log(bigmap1);
+
+      //  await db.countryDataDump.create({
+      //    data: {
+      //      bigmap: bigmap1,
+      //    },
+      //  });
+
+      // Respond to the client with the fetched data
+      res.status(200).json({ mapOfCompaniesWStates });
     } catch (error) {
       // Handle errors, log them, or send an appropriate response
       console.error("Error:", error);

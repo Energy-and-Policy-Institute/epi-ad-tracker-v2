@@ -118,19 +118,25 @@ export default async function handler(
             // if we already have the state in the statemap
             if (stateCells1.has(theRowArray[q]?.region!) === true) {
               stateCells1.get(theRowArray[q]?.region!)!.lowerbound =
-                stateCells1.get(theRowArray[q]?.region!)?.lowerbound! +
-                Number(value[o]!.spend_lower_bound);
+                Number(stateCells1.get(theRowArray[q]?.region!)?.lowerbound!) +
+                Number(value[o]!.spend_lower_bound) *
+                  Number(theRowArray[q]?.percentage);
 
               stateCells1.get(theRowArray[q]?.region!)!.upperbound =
-                stateCells1.get(theRowArray[q]?.region!)?.upperbound! +
-                Number(value[o]!.spend_upper_bound);
+                Number(stateCells1.get(theRowArray[q]?.region!)?.upperbound!) +
+                Number(value[o]!.spend_upper_bound) *
+                  Number(theRowArray[q]?.percentage);
 
               stateCells1.get(theRowArray[q]?.region!)!.number_of_ads =
                 stateCells1.get(theRowArray[q]?.region!)?.number_of_ads! + 1;
             } else {
               let region: RegionDataCell = {
-                upperbound: Number(value[o]?.spend_upper_bound),
-                lowerbound: Number(value[o]?.spend_lower_bound),
+                upperbound:
+                  Number(value[o]?.spend_upper_bound) *
+                  Number(theRowArray[q]?.percentage),
+                lowerbound:
+                  Number(value[o]?.spend_lower_bound) *
+                  Number(theRowArray[q]?.percentage),
                 number_of_ads: 1,
               };
               //  const newstateCells = await ADD_TO_MAP(

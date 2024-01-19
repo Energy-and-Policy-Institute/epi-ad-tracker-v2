@@ -93,9 +93,11 @@ export default async function handler(
           // let theRowArray: regiondelivery[] = JSON.parse(theRow!);
 
           let theRowArray: regiondelivery[] = [];
-
           try {
+            console.log("theRowArray1");
             theRowArray = JSON.parse(theRow!);
+            console.log("theRowArray2");
+            console.log(theRowArray);
           } catch (error) {
             // console.error("Error parsing JSON:", error);
           }
@@ -113,6 +115,7 @@ export default async function handler(
           AmericaCell1.number_of_ads = AmericaCell1.number_of_ads + 1;
 
           for (let q: number = 0; q < theRowArray.length; q++) {
+            // if we already have the state in the statemap
             if (stateCells1.has(theRowArray[q]?.region!) === true) {
               stateCells1.get(theRowArray[q]?.region!)!.lowerbound =
                 stateCells1.get(theRowArray[q]?.region!)?.lowerbound! +
@@ -216,6 +219,8 @@ export default async function handler(
       //      bigmap: bigmap1,
       //    },
       //  });
+
+      // await db.pythonendpointrow.deleteMany({});
 
       // Respond to the client with the fetched data
       res.status(200).json({ mapOfCompaniesWStates });

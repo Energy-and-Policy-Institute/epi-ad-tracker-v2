@@ -40,8 +40,10 @@ export default async function handler(
             ),
             ad_snapshot_url: String(InputPythonRow1.ad_snapshot_url),
             bylines: String(InputPythonRow1.bylines),
-            delivery_by_region: String(InputPythonRow1.delivery_by_region),
-            demographic_distribution: String(
+            delivery_by_region: JSON.stringify(
+              InputPythonRow1.delivery_by_region,
+            ),
+            demographic_distribution: JSON.stringify(
               InputPythonRow1.demographic_distribution,
             ),
             publisher_platforms: String(InputPythonRow1.publisher_platforms),

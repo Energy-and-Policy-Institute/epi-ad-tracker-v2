@@ -81,35 +81,32 @@ export const pythonRouter = createTRPCRouter({
         // const ShallYouPass = await IsNaN(theRowArray);
 
         // if (ShallYouPass === false)
-        if (true) {
-          AmericaCell1.lowerbound =
-            AmericaCell1.lowerbound + Number(value[o]!.spend_lower_bound);
-          AmericaCell1.upperbound =
-            AmericaCell1.upperbound + Number(value[o]!.spend_upper_bound);
-          AmericaCell1.number_of_ads = AmericaCell1.number_of_ads + 1;
 
-          for (let q: number = 0; q < theRowArray.length; q++) {
-            if (stateCells1.has(theRowArray[q]?.region!) === true) {
-              stateCells1.get(theRowArray[q]?.region!)!.lowerbound =
-                stateCells1.get(theRowArray[q]?.region!)?.lowerbound! +
-                Number(value[o]!.spend_lower_bound);
+        AmericaCell1.lowerbound =
+          AmericaCell1.lowerbound + Number(value[o]!.spend_lower_bound);
+        AmericaCell1.upperbound =
+          AmericaCell1.upperbound + Number(value[o]!.spend_upper_bound);
+        AmericaCell1.number_of_ads = AmericaCell1.number_of_ads + 1;
 
-              stateCells1.get(theRowArray[q]?.region!)!.upperbound =
-                stateCells1.get(theRowArray[q]?.region!)?.upperbound! +
-                Number(value[o]!.spend_upper_bound);
+        for (let q: number = 0; q < theRowArray.length; q++) {
+          if (stateCells1.has(theRowArray[q]?.region!) === true) {
+            stateCells1.get(theRowArray[q]?.region!)!.lowerbound =
+              stateCells1.get(theRowArray[q]?.region!)?.lowerbound! +
+              Number(value[o]!.spend_lower_bound);
 
-              stateCells1.get(theRowArray[q]?.region!)!.number_of_ads =
-                stateCells1.get(theRowArray[q]?.region!)?.number_of_ads! + 1;
-            } else {
-              let region: RegionDataCell = {
-                upperbound: Number(value[o]?.spend_upper_bound),
-                lowerbound: Number(value[o]?.spend_lower_bound),
-                number_of_ads: 1,
-              };
-              stateCells1.set(theRowArray[q]?.region!, region);
-            }
-            // console.log("maptype is", typeof mapOfCompaniesWStates);
-            // console.log("Is it a Map?", mapOfCompaniesWStates instanceof Map);
+            stateCells1.get(theRowArray[q]?.region!)!.upperbound =
+              stateCells1.get(theRowArray[q]?.region!)?.upperbound! +
+              Number(value[o]!.spend_upper_bound);
+
+            stateCells1.get(theRowArray[q]?.region!)!.number_of_ads =
+              stateCells1.get(theRowArray[q]?.region!)?.number_of_ads! + 1;
+          } else {
+            let region: RegionDataCell = {
+              upperbound: Number(value[o]?.spend_upper_bound),
+              lowerbound: Number(value[o]?.spend_lower_bound),
+              number_of_ads: 1,
+            };
+            stateCells1.set(theRowArray[q]?.region!, region);
           }
         }
       }

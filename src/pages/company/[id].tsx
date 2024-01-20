@@ -1,4 +1,5 @@
 // pages/[id].js
+
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 
@@ -28,7 +29,8 @@ const DynamicPage = () => {
                 {" "}
                 {company.data!.map((row) => (
                   <>
-                    {row.upperspend > 0 && (
+                    {/* row.upperspend > 0 &&  */}
+                    {true && (
                       <tr
                         key={row.id}
                         // className="center text-center font-bold outline"

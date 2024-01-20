@@ -3,6 +3,21 @@ import { regiondelivery } from "randomtypes";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { db } from "~/server/db";
 import { RegionDataCell, RegionDataHive } from "randomtypes";
+import Decimal from "decimal.js";
+
+async function RealMultiplication(
+  number1: number,
+  number2: number,
+): Promise<Decimal> {
+  let num1: string = number1.toString();
+  let num2: string = number2.toString();
+
+  let num1d: Decimal = new Decimal(num1);
+  let num2d: Decimal = new Decimal(num2);
+
+  let result = num1d.times(num2d);
+  return result;
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -60,10 +75,7 @@ export default async function handler(
 
           let theRowArray: regiondelivery[] = [];
           try {
-            console.log("theRowArray1");
             theRowArray = JSON.parse(theRow!);
-            console.log("theRowArray2");
-            console.log(theRowArray);
           } catch (error) {
             // console.error("Error parsing JSON:", error);
           }
@@ -81,24 +93,46 @@ export default async function handler(
           AmericaCell1.number_of_ads = AmericaCell1.number_of_ads + 1;
 
           for (let q: number = 0; q < theRowArray.length; q++) {
+            const resultUPPER1 = await RealMultiplication(
+              value[o]!.spend_upper_bound,
+              theRowArray[q]?.percentage!,
+            );
+
+            const resultUPPER = resultUPPER1.toDecimalPlaces(
+              2,
+              Decimal.ROUND_DOWN,
+            );
+
+            const resultLower1 = await RealMultiplication(
+              value[o]!.spend_lower_bound,
+              theRowArray[q]?.percentage!,
+            );
+
+            const resultLower = resultLower1.toDecimalPlaces(
+              2,
+              Decimal.ROUND_DOWN,
+            );
+
+            if (Number(resultLower) < 1 && Number(resultUPPER) < 1) {
+              console.log("MULTIPLICATION RESULTS", resultLower, resultUPPER);
+            }
+
             // if we already have the state in the statemap
             if (stateCells1.has(theRowArray[q]?.region!) === true) {
               stateCells1.get(theRowArray[q]?.region!)!.lowerbound =
                 stateCells1.get(theRowArray[q]?.region!)?.lowerbound! +
-                value[o]!.spend_lower_bound * theRowArray[q]?.percentage!;
+                Number(resultLower);
 
               stateCells1.get(theRowArray[q]?.region!)!.upperbound =
                 stateCells1.get(theRowArray[q]?.region!)?.upperbound! +
-                value[o]!.spend_upper_bound * theRowArray[q]?.percentage!;
+                Number(resultUPPER);
 
               stateCells1.get(theRowArray[q]?.region!)!.number_of_ads =
                 stateCells1.get(theRowArray[q]?.region!)?.number_of_ads! + 1;
             } else {
               let region: RegionDataCell = {
-                upperbound:
-                  value[o]?.spend_upper_bound! * theRowArray[q]?.percentage!,
-                lowerbound:
-                  value[o]?.spend_lower_bound! * theRowArray[q]?.percentage!,
+                upperbound: Number(resultUPPER),
+                lowerbound: Number(resultLower),
                 number_of_ads: 1,
               };
               //  const newstateCells = await ADD_TO_MAP(
@@ -161,31 +195,10 @@ export default async function handler(
         // await LoopStateCells(value1.stateCells, companyname);
 
         for (const [stateKey, stateValue] of value.stateCells) {
-          console.log("ADDING COUNTRYROW");
-          console.log(key, value);
           try {
-            // if (stateValue.upperbound === 0) {
-            //   await db.companyRows.create({
-            //     data: {
-            //       company: String(key),
-            //       location: String(stateKey),
-            //       upperspend: 0.99,
-            //       lowerspend: stateValue.lowerbound,
-            //       numberOfAds: stateValue.number_of_ads,
-            //     },
-            //   });
-            // } else {
-            //   await db.companyRows.create({
-            //     data: {
-            //       company: String(key),
-            //       location: String(stateKey),
-            //       upperspend: stateValue.upperbound,
-            //       lowerspend: stateValue.lowerbound,
-            //       numberOfAds: stateValue.number_of_ads,
-            //     },
-            //   });
-            // }
-
+            if (stateValue.upperbound < 1) {
+              console.log("EMERGENCY", stateValue.upperbound, key, stateKey);
+            }
             await db.companyRows.create({
               data: {
                 company: String(key),
@@ -193,9 +206,10 @@ export default async function handler(
                 upperspend: stateValue.upperbound,
                 lowerspend: stateValue.lowerbound,
                 numberOfAds: stateValue.number_of_ads,
+                upperspendTXT: String(stateValue.upperbound),
+                lowerspendTXT: String(stateValue.lowerbound),
               },
             });
-            console.log("ADDED COUNTRYROW");
           } catch (error) {
             console.error("Error writing to the database:", error);
           }

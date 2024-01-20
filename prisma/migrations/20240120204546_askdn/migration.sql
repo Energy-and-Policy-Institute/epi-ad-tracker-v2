@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "CompanyRows" ALTER COLUMN "upperspend" SET DATA TYPE DECIMAL(65,30),
+ALTER COLUMN "lowerspend" SET DATA TYPE DECIMAL(65,30);

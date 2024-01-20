@@ -53,11 +53,14 @@ model CountryRows {
 }
 
 model CompanyRows {
-        id           Int          @id @default(autoincrement())
-        company      String   
-        location     String   
-        upperspend   Int
-        lowerspend   Int
+        id              Int          @id @default(autoincrement())
+        company         String   
+        location        String   
+        upperspend      Decimal
+        lowerspend      Decimal
+        upperspendTXT   String?
+        lowerspendTXT   String?
+
         numberOfAds  Int
 }
 

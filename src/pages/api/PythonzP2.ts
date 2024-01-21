@@ -100,7 +100,7 @@ export default async function handler(
 
             const resultUPPER = resultUPPER1.toDecimalPlaces(
               2,
-              Decimal.ROUND_DOWN,
+              Decimal.ROUND_UP,
             );
 
             const resultLower1 = await RealMultiplication(
@@ -110,7 +110,7 @@ export default async function handler(
 
             const resultLower = resultLower1.toDecimalPlaces(
               2,
-              Decimal.ROUND_DOWN,
+              Decimal.ROUND_UP,
             );
 
             if (Number(resultLower) < 1 && Number(resultUPPER) < 1) {

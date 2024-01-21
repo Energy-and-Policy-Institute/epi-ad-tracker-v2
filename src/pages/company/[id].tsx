@@ -1,5 +1,6 @@
 // pages/[id].js
-
+// "use client";
+import { Decimal } from "@prisma/client/runtime/library";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 
@@ -9,6 +10,19 @@ const DynamicPage = () => {
   const company = api.python.getCompanyRows.useQuery({
     text: id?.toString()!,
   });
+
+  function ReCutNumber(num: Decimal): string {
+    let numstring: String = String(num);
+
+    if (numstring.includes(".")) {
+      let NumSlice: String[] = numstring.split(".");
+      let num1: String = NumSlice[0]!;
+      let num2: String = NumSlice[1]?.substring(0, 2)!;
+      let num3: String = num1.toString() + "." + num2.toString();
+      return num3.toString();
+    }
+    return numstring.toString();
+  }
 
   function SubTable() {
     return (
@@ -32,6 +46,10 @@ const DynamicPage = () => {
                     {/* row.upperspend > 0 &&  */}
                     {true && (
                       <tr
+                        onClick={() => {
+                          ReCutNumber(row.lowerspend);
+                          // console.log("paloki");
+                        }}
                         key={row.id}
                         // className="center text-center font-bold outline"
                       >
@@ -41,11 +59,12 @@ const DynamicPage = () => {
                         <td className="px-5 py-2 outline">
                           {row.lowerspend !== row.upperspend && (
                             <>
-                              ${row.lowerspend} -{row.upperspend}{" "}
+                              ${ReCutNumber(row.lowerspend)} -
+                              {ReCutNumber(row.upperspend)}{" "}
                             </>
                           )}
                           {row.lowerspend === row.upperspend && (
-                            <>${row.upperspend} </>
+                            <>${ReCutNumber(row.upperspend)} </>
                           )}
                         </td>
                       </tr>

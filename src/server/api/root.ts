@@ -1,4 +1,4 @@
-import { postRouter } from "~/server/api/routers/post";
+import { frontGroupRouter } from "~/server/api/routers/frontGroup";
 import { createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -7,7 +7,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  post: postRouter,
+  frontGroup: frontGroupRouter,
 });
 
 // export type definition of API

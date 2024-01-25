@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Ad" ALTER COLUMN "bylines" SET NOT NULL,
+ALTER COLUMN "bylines" SET DATA TYPE TEXT;

@@ -2,19 +2,48 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Ad {
+  id                            String     @id @default(uuid())
+  ad_delivery_start_time        String?
+  ad_delivery_stop_time         String?
+  ad_snapshot_url               String
+  bylines                       String
+  delivery_by_region            Json?
+  demographic_distribution      Json?
+  publisher_platforms           String[]
+  ad_creative_bodies            String[]
+  ad_creative_link_captions     String[]
+  ad_creative_link_descriptions String[]
+  ad_creative_link_titles       String[]
+  page_name                     String
+  page_id                       String
+  impressions_lower_bound       Int
+  impressions_upper_bound       Int
+  spend_lower_bound             Int
+  spend_upper_bound             Int
+  ad_start_month                Int
+  ad_start_year                 Int
+  frontGroup                   FrontGroup? @relation(fields: [frontGroupId], references: [id])
+    frontGroupId                 String?
+}
 
-    @@index([name])
+
+model FrontGroup {
+  id        String   @id @default(uuid())
+  name      String
+  ads       Ad[]
+  regionalBreakdown Json?
+  numAds    Int
+  adSpendLower Int
+  adSpendUpper Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

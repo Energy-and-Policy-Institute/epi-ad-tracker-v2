@@ -33,6 +33,7 @@ model Ad {
   ad_start_year                 Int
   frontGroup                   FrontGroup? @relation(fields: [frontGroupId], references: [id])
     frontGroupId                 String?
+    ad_screenshot_url            String @default("null")
 }
 
 

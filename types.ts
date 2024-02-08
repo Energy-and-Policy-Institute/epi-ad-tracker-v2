@@ -69,6 +69,7 @@ export const InputPythonRowSchema = z.object({
   spend_upper_bound: z.number(),
   ad_start_month: z.number(),
   ad_start_year: z.number(),
+  ad_screenshot_url: z.string().optional(),
 });
 
 export type InputPythonRow = z.infer<typeof InputPythonRowSchema>;

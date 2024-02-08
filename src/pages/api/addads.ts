@@ -7,19 +7,27 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   if (req.method === "POST") {
+    const ads = AdSchema.array().parse(req.body);
     try {
-      const ads = AdSchema.array().parse(req.body);
+      //const ads = AdSchema.array().parse(req.body);
+
+      console.log('ads', ads)
 
       const requests = ads.map(async (ad) => {
         const existingAd = await db.ad.findFirst({ where: { id: ad.id } });
 
-        if (existingAd) {
+        if (!existingAd){
+          console.log('creating new')
+          await db.ad.create({ data: ad });
+          // if there is a new screenshot, we need to update the ad
+        } else if (existingAd.ad_screenshot_url !== ad.ad_screenshot_url) {
+          console.log('updating existing')
+          await db.ad.update({ where: { id: ad.id }, data: ad });
+        } else {
           console.log(`Row with fieldName ${ad.id} exists.`);
           res.status(200).json({ message: "Row already exists" });
           return;
-        }
-
-        await db.ad.create({ data: ad });
+        }        
       });
 
       await Promise.all(requests);

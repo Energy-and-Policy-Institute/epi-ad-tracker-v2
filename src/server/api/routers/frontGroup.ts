@@ -15,4 +15,16 @@ export const frontGroupRouter = createTRPCRouter({
     });
     return frontGroup;
   }),
+  ads: publicProcedure.query(async ({ ctx }) => {
+    const ads = await ctx.db.ad.findMany({
+      where: { ad_screenshot_url: { not: 'null' },}
+    });
+    return ads;
+  }),
+  ad: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const ad = await ctx.db.ad.findFirst({
+      where: { id: input },
+    });
+    return ad;
+  })
 });

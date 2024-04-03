@@ -47,4 +47,6 @@ model FrontGroup {
   adSpendUpper Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  active    Boolean  @default(true)
+  rank      Int     @default(0)
 }

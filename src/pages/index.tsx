@@ -109,9 +109,9 @@ const Home = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          <div className='flex gap-x-2'>
+          <div className='flex gap-x-2 items-center'>
             <DatePicker date={startDate} setDate={setStartDate} />
-            <span>to</span>
+            <span className='text-secondary text-sm'>to</span>
             <DatePicker date={endDate} setDate={setEndDate} />
             {datesDiffer && (
               <button

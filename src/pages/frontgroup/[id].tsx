@@ -1,35 +1,52 @@
 import { useRouter } from 'next/router'
-import { RegionalBreakdownSchema } from 'types'
 import { api } from '~/utils/api'
+import { useMemo, useState } from 'react'
+
+import {
+  ActiveChip,
+  DatePicker,
+  Disclaimer,
+  DownloadCSVButton,
+  HeaderItem,
+  convertToCSV,
+} from '~/components/common'
+import dayjs from 'dayjs'
+import { withCommas } from '~/utils/functions'
 
 type SortOptions = 'state' | 'spend'
+
+const defaultStartDate = '2018-05-24'
+const defaultEndDate = dayjs().format('YYYY-MM-DD')
 
 const Page = () => {
   const router = useRouter()
   const id = (router.query.id ?? '') as string
-  const { data: frontGroup, isLoading } = api.frontGroup.get.useQuery({ id })
-  const regionalBreakdown = RegionalBreakdownSchema.parse(
-    frontGroup?.regionalBreakdown,
-  )
+  const [startDate, setStartDate] = useState<string>(defaultStartDate)
+  const [endDate, setEndDate] = useState<string>(defaultEndDate)
+  const { data: frontGroup, isLoading } = api.frontGroup.get.useQuery({
+    frontGroupId: id,
+    startDate,
+    endDate,
+  })
 
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [sortBy, setSortBy] = useState<SortOptions>('spend')
 
   const sorted = useMemo(() => {
-    if (!regionalBreakdown) return null
+    if (!frontGroup?.regionalBreakdown) return null
 
-    console.log('here', regionalBreakdown.length)
-
-    let sorted = regionalBreakdown
-      .sort((a, b) => a.upperbound - b.upperbound)
+    let sorted = frontGroup.regionalBreakdown
+      .sort((a, b) => a.upperBound - b.upperBound)
       .slice()
 
     if (sortBy === 'state') {
-      sorted = regionalBreakdown.sort((a, b) => a.name.localeCompare(b.name))
+      sorted = frontGroup.regionalBreakdown.sort((a, b) =>
+        a.state.localeCompare(b.state),
+      )
     }
 
     return sortDirection === 'asc' ? sorted : sorted.slice().reverse()
-  }, [regionalBreakdown, sortBy, sortDirection])
+  }, [frontGroup?.regionalBreakdown, sortBy, sortDirection])
 
   const handleSortChange = (sb: SortOptions) => {
     console.log('handleSortChange', sb)
@@ -40,193 +57,91 @@ const Page = () => {
       setSortDirection('asc')
     }
   }
+
+  const resetDates = () => {
+    setStartDate(defaultStartDate)
+    setEndDate(defaultEndDate)
+  }
+
+  const datesDiffer =
+    startDate !== defaultStartDate || endDate !== defaultEndDate
 
   if (isLoading) return <div>Loading...</div>
 
+  if (!frontGroup) return <div>Not found</div>
+
   return (
-    <div className='flex flex-col items-center w-full py-5'>
-      <button className='font-bold underline' onClick={() => router.back()}>
-        Back
-      </button>
-      <h1 className='text-3xl font-semibold py-4'>{frontGroup?.name}</h1>
-      {sorted && (
-        <table>
-          <thead>
-            <tr className='border-b border-gray-400'>
-              <HeaderItem
-                title='State'
-                onSort={() => handleSortChange('state')}
-              />
-              <HeaderItem
-                title='Spend'
-                onSort={() => handleSortChange('spend')}
-              />
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.map((row, i) => (
-              <tr key={i} className='border-b border-gray-400'>
-                <td className='px-5 py-2'>{row.name}</td>
-                <td className='px-5 py-2'>
-                  {`$${row.lowerbound.toFixed(0)} - $${row.upperbound.toFixed(0)}`}
-                </td>
+    <div className='flex justify-center'>
+      <div className='max-w-[600px] w-full py-5'>
+        <div className='flex gap-x-2 items-center'>
+          <ActiveChip active={frontGroup?.active} />
+          <div className='text-3xl font-semibold text-primary'>
+            {frontGroup?.name}
+          </div>
+        </div>
+        <p className='text-secondary text-sm py-1'>
+          Last ad: {dayjs(frontGroup.lastAdDate).format('MMMM DD, YYYY')}
+        </p>
+        <div className='flex gap-x-2 items-center py-5'>
+          <DatePicker setDate={setStartDate} date={startDate} />
+          <span className='text-secondary text-sm'>to</span>
+          <DatePicker setDate={setEndDate} date={endDate} />
+          {datesDiffer && (
+            <button
+              type='button'
+              onClick={resetDates}
+              className='px-3 text-reset'
+            >
+              Reset
+            </button>
+          )}
+          <DownloadCSVButton
+            fileName={`${frontGroup.name}_${dayjs(startDate).format('MM-DD-YY')}_to_${dayjs(endDate).format('MM-DD-YY')}`}
+            csv={convertToCSV(frontGroup.regionalBreakdown, [])}
+          />
+        </div>
+        <p className='text-secondary pb-5'>
+          During this time frame, {frontGroup.name} ran{' '}
+          {withCommas(frontGroup.numAds)} <b>ad(s)</b> on Meta{"'"}s platforms,
+          spending at least ${withCommas(frontGroup.adSpendUpper)}.
+          <br />
+          <br />
+          Below is it{"'"}s ad spending by region:
+        </p>
+        {sorted && (
+          <table className='w-full'>
+            <thead>
+              <tr className='bg-backgroundLight'>
+                <HeaderItem
+                  title='State'
+                  onSort={() => handleSortChange('state')}
+                />
+                <HeaderItem
+                  title='Money Spent'
+                  onSort={() => handleSortChange('spend')}
+                />
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  )
-}
-
-export default Page
-
-import Link from 'next/link'
-import { useMemo, useState } from 'react'
-import { faSort } from '@fortawesome/free-solid-svg-icons'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
-const Home = () => {
-  const [startDate, setStartDate] = useState<string>()
-  const [endDate, setEndDate] = useState<string>()
-  const { data: frontGroups, isLoading } =
-    api.frontGroup.dynamicFrontGroups.useQuery({
-      startDate,
-      endDate,
-    })
-  const totalAds = frontGroups?.reduce((acc, curr) => acc + curr.numAds, 0)
-  const totalSpendUpper = frontGroups?.reduce(
-    (acc, curr) => acc + curr.adSpendUpper,
-    0,
-  )
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>()
-  const [sortBy, setSortBy] = useState<SortOptions>()
-
-  const sorted = frontGroups
-
-  const handleSortChange = (sb: SortOptions) => {
-    console.log('handleSortChange', sb)
-    if (sortBy === sb) {
-      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
-    } else {
-      setSortBy(sb)
-      setSortDirection('asc')
-    }
-  }
-
-  return (
-    <div className='flex flex-col w-full items-center py-5'>
-      <h1 className='py-5 text-3xl font-semibold'>Ad Tracker V2</h1>
-      <div className='max-w-[800px]'>
-        <div className='flex gap-x-3 border-b border-gray-200 py-2'>
-          <div className='flex gap-x-1'>
-            <span className='text-gray-600'>Total # of ads:</span>
-            <span className='font-semibold tracking-wide'>{totalAds}</span>
-          </div>
-          <div className='flex gap-x-1'>
-            <span className='text-gray-600'>Total spend:</span>
-            <span className='font-semibold tracking-wide'>{`$${totalSpendUpper?.toLocaleString('en', { useGrouping: true })}`}</span>
-          </div>
-        </div>
-        <div className='flex justify-end gap-x-2 py-2'>
-          <input
-            type='date'
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className='px-2 border border-gray-400 rounded-md bg-gray-100 text-gray-700'
-          />
-          <span>to</span>
-          <input
-            type='date'
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className='px-2 border border-gray-400 rounded-md bg-gray-100 text-gray-700'
-          />
-        </div>
-        <table className='w-full max-w-[800px]'>
-          <thead>
-            <tr className='bg-gray-100'>
-              <HeaderItem
-                title='Rank'
-                onSort={() => handleSortChange('state')}
-              />
-              <HeaderItem
-                title='Status'
-                onSort={() => handleSortChange('state')}
-              />
-              <HeaderItem
-                title='Name'
-                onSort={() => handleSortChange('state')}
-              />
-              <HeaderItem
-                title='Total # of ads'
-                onSort={() => handleSortChange('state')}
-              />
-              <HeaderItem
-                title='Money spent'
-                onSort={() => handleSortChange('state')}
-              />
-            </tr>
-          </thead>
-          <tbody className='text-gray-500'>
-            {!isLoading ? (
-              sorted?.map((row) => (
-                <tr key={row.id} className='border-b border-gray-200'>
-                  <td className='px-5 py-2'>{row.rank}</td>
-                  <td className='px-5 py-2'>
-                    {row.active ? (
-                      <div className='rounded-md bg-green-300 text-green-800 inline-block px-2 text-sm font-semibold'>
-                        Active
-                      </div>
-                    ) : (
-                      <div className='rounded-md bg-red-300 text-red-800 inline-block px-2 text-sm font-semibold'>
-                        Inactive
-                      </div>
-                    )}
+            </thead>
+            <tbody>
+              {sorted.map((row, i) => (
+                <tr key={i} className='border-b border-backgroundLight'>
+                  <td className='px-5 py-2 text-secondary text-center'>
+                    {row.state}
                   </td>
-                  <td className='px-5 py-2'>
-                    <Link
-                      href={`/frontgroup/${encodeURIComponent(row.id)}`}
-                      className='text-blue-500 hover:underline'
-                    >
-                      {row.name}
-                    </Link>
-                  </td>
-                  <td className='px-5 py-2'>{row.numAds}</td>
-                  <td className='px-5 py-2'>
-                    {`$${row.adSpendLower} - $${row.adSpendUpper}`}
+                  <td className='px-5 py-2 text-secondary'>
+                    <div className='pl-[100px]'>
+                      {`$${row.lowerBound.toFixed(0)} - $${row.upperBound.toFixed(0)}`}
+                    </div>
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr className='flex justify-center py-2'>
-                <td>Loading...</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <Disclaimer />
       </div>
     </div>
   )
 }
 
-const HeaderItem = ({
-  title,
-  onSort,
-}: {
-  title: string
-  onSort?: () => void
-}) => {
-  return (
-    <th className='py-2'>
-      <span>{title}</span>
-      <span> </span>
-      {onSort && (
-        <button className='text-xs fong-regular' onClick={onSort}>
-          <FontAwesomeIcon icon={faSort} />
-        </button>
-      )}
-    </th>
-  )
-}
+export default Page

@@ -34,7 +34,7 @@ export const frontGroupRouter = createTRPCRouter({
       })
 
       const frontGroups: Omit<FrontGroup, 'createdAt' | 'updatedAt'>[] = []
-
+      let inLast3Months = false
       for (const ad of ads) {
         // NOTE: this filtering could probably be done in the query for speed if it becomes an issue
         const getInRange = () => {
@@ -57,14 +57,8 @@ export const frontGroupRouter = createTRPCRouter({
           )
         }
 
-        const getInLast3Months = () => {
-          return dayjs(ad.ad_delivery_start_time).isAfter(
-            dayjs().subtract(18, 'month'),
-          )
-        }
-
         const adInRange = getInRange()
-        const inLast3Months = getInLast3Months()
+        if (getInLast3Months(ad.ad_delivery_stop_time)) inLast3Months = true
 
         // create the front group for the ad if it doesn't exist already
         if (!frontGroups.find((fg) => fg.id === ad.page_id)) {
@@ -75,7 +69,7 @@ export const frontGroupRouter = createTRPCRouter({
             adSpendUpper: adInRange ? ad.spend_upper_bound : 0,
             adSpendLower: adInRange ? ad.spend_lower_bound : 0,
             regionalBreakdown: [],
-            rank: getRank(ad.page_id),
+            rank: 0,
             active: inLast3Months, // for now
           })
         } else {
@@ -89,21 +83,15 @@ export const frontGroupRouter = createTRPCRouter({
       }
 
       return frontGroups
+        .sort((a, b) => b.adSpendUpper - a.adSpendUpper)
+        .map((fg, i) => ({ ...fg, rank: i + 1 }))
     }),
   get: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const frontGroup = await ctx.db.frontGroup.findFirst({
-        where: { id: input.id },
-      })
-      return frontGroup
-    }),
-  get2: publicProcedure
     .input(
       z.object({
         frontGroupId: z.string(),
-        startDate: z.string(),
-        endDate: z.string(),
+        startDate: z.string().nullish(),
+        endDate: z.string().nullish(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -128,6 +116,8 @@ export const frontGroupRouter = createTRPCRouter({
         (ad) =>
           ad.ad_delivery_start_time &&
           ad.ad_delivery_stop_time &&
+          input.startDate &&
+          input.endDate &&
           adDatesWithinRange(
             ad.ad_delivery_start_time,
             ad.ad_delivery_stop_time,
@@ -141,6 +131,17 @@ export const frontGroupRouter = createTRPCRouter({
         lowerBound: number
         upperBound: number
       }[] = []
+
+      let active = false
+      let lastAdDate = null
+      for (const ad of frontGroup.ads) {
+        if (getInLast3Months(ad.ad_delivery_stop_time)) active = true
+        if (
+          dayjs(ad.ad_delivery_stop_time).isAfter(lastAdDate ?? '2000-01-01')
+        ) {
+          lastAdDate = ad.ad_delivery_stop_time
+        }
+      }
 
       for (const ad of filteredAds) {
         const parsedByRegion = AdRegionItem.array().parse(ad.delivery_by_region)
@@ -163,7 +164,23 @@ export const frontGroupRouter = createTRPCRouter({
         }
       }
 
-      return regionalBreakdown
+      const totalAds = filteredAds.length
+      const totalSpend = filteredAds.reduce(
+        (acc, curr) => acc + curr.spend_upper_bound,
+        0,
+      )
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { ads, ...rest } = frontGroup
+
+      return {
+        ...rest,
+        lastAdDate,
+        active,
+        totalAds,
+        totalSpend,
+        regionalBreakdown,
+      }
     }),
   ads: publicProcedure.query(async ({ ctx }) => {
     const ads = await ctx.db.ad.findMany({
@@ -233,4 +250,9 @@ const adDatesWithinRange = (
     isBetween(_adStartDate, _rangeStartDate, _rangeEndDate) ||
     isBetween(_adEndDate, _rangeStartDate, _rangeEndDate)
   )
+}
+
+const getInLast3Months = (date: string | null) => {
+  if (!date) return false
+  return dayjs(date).isAfter(dayjs().subtract(6, 'month'))
 }

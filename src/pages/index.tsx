@@ -1,22 +1,27 @@
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { api } from '~/utils/api'
-import {
-  faDownload,
-  faFileExport,
-  faSort,
-} from '@fortawesome/free-solid-svg-icons'
+import { faDownload, faSort } from '@fortawesome/free-solid-svg-icons'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { FrontGroup } from 'types'
+import { type FrontGroup } from 'types'
 import dayjs from 'dayjs'
+import {
+  DatePicker,
+  Disclaimer,
+  DownloadCSVButton,
+  HeaderItem,
+  convertToCSV,
+} from '~/components/common'
+import { withCommas } from '~/utils/functions'
 
 type SortOptions = 'rank' | 'status' | 'name' | 'numAds' | 'adSpend'
 const defaultStartDate = '2018-05-24'
+const defaultEndDate = dayjs().format('YYYY-MM-DD')
 
 const Home = () => {
   const [startDate, setStartDate] = useState<string>(defaultStartDate)
-  const [endDate, setEndDate] = useState<string>(dayjs().format('YYYY-MM-DD'))
+  const [endDate, setEndDate] = useState<string>(defaultEndDate)
   const { data: frontGroups, isLoading } =
     api.frontGroup.dynamicFrontGroups.useQuery({
       startDate,
@@ -77,48 +82,37 @@ const Home = () => {
 
   const resetDates = () => {
     setStartDate(defaultStartDate)
-    setEndDate(dayjs().format('YYYY-MM-DD'))
+    setEndDate(defaultEndDate)
   }
 
   const datesDiffer =
-    startDate !== defaultStartDate || endDate !== dayjs().format('YYYY-MM-DD')
+    startDate !== defaultStartDate || endDate !== defaultEndDate
 
   return (
     <div className='flex flex-col w-full items-center py-5'>
-      <h1 className='py-5 text-3xl font-semibold'>Ad Tracker V2</h1>
       <div className='w-[800px]'>
-        <div className='flex gap-x-3 border-b border-gray-200 py-2'>
+        <div className='flex gap-x-3 border-b border-background py-2'>
           <div className='flex gap-x-1'>
-            <span className='text-gray-600'>Total # of ads:</span>
+            <span className='text-secondary'>All Groups:</span>
             <span className='font-semibold tracking-wide'>{totalAds}</span>
           </div>
           <div className='flex gap-x-1'>
-            <span className='text-gray-600'>Total spend:</span>
-            <span className='font-semibold tracking-wide'>{`$${totalSpendUpper?.toLocaleString('en', { useGrouping: true })}`}</span>
+            <span className='text-secondary'>Total Spent:</span>
+            <span className='font-semibold tracking-wide'>{`$${toK(totalSpendUpper ?? 0)}`}</span>
           </div>
         </div>
         <div className='flex justify-between gap-x-2 py-2'>
           <input
             type='text'
             placeholder='Search'
-            className='px-2 border border-gray-400 rounded-md bg-gray-100 text-gray-700'
+            className='px-2 border border-background rounded-md bg-white text-gray-700 outline-none w-[300px]'
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           <div className='flex gap-x-2'>
-            <input
-              type='date'
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className='px-2 border border-gray-400 rounded-md bg-gray-100 text-gray-700'
-            />
+            <DatePicker date={startDate} setDate={setStartDate} />
             <span>to</span>
-            <input
-              type='date'
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className='px-2 border border-gray-400 rounded-md bg-gray-100 text-gray-700'
-            />
+            <DatePicker date={endDate} setDate={setEndDate} />
             {datesDiffer && (
               <button
                 type='button'
@@ -128,15 +122,15 @@ const Home = () => {
                 Reset
               </button>
             )}
-            <DownloadCSV
-              jsonData={frontGroups ?? []}
+            <DownloadCSVButton
+              csv={convertToCSV(frontGroups ?? [], ['regionalBreakdown', 'id'])}
               fileName={`frontgroups_data_${dayjs(startDate).format('MM-DD-YY')}_to_${dayjs(endDate).format('MM-DD-YY')}`}
             />
           </div>
         </div>
         <table className='w-full max-w-[800px]'>
           <thead>
-            <tr className='bg-gray-100'>
+            <tr className='bg-backgroundLight'>
               <HeaderItem
                 title='Rank'
                 onSort={() => handleSortChange('rank')}
@@ -150,7 +144,7 @@ const Home = () => {
                 onSort={() => handleSortChange('name')}
               />
               <HeaderItem
-                title='Total # of ads'
+                title='Ads'
                 onSort={() => handleSortChange('numAds')}
               />
               <HeaderItem
@@ -163,7 +157,7 @@ const Home = () => {
             {!isLoading ? (
               sorted?.map((row) => (
                 <tr key={row.id} className='border-b border-gray-200'>
-                  <td className='px-5 py-2'>{row.rank}</td>
+                  <td className='px-5 py-2 text-center'>{row.rank}</td>
                   <td className='px-5 py-2'>
                     {row.active ? (
                       <div className='rounded-md bg-green-300 text-green-800 inline-block px-2 text-sm font-semibold'>
@@ -178,13 +172,13 @@ const Home = () => {
                   <td className='px-5 py-2'>
                     <Link
                       href={`/frontgroup/${encodeURIComponent(row.id)}`}
-                      className='text-blue-500 hover:underline'
+                      className='text-secondary hover:underline text-center'
                     >
                       {row.name}
                     </Link>
                   </td>
-                  <td className='px-5 py-2'>{row.numAds}</td>
-                  <td className='px-5 py-2'>
+                  <td className='px-5 py-2 text-center'>{row.numAds}</td>
+                  <td className='px-5 py-2 text-center'>
                     {`$${row.adSpendLower} - $${row.adSpendUpper}`}
                   </td>
                 </tr>
@@ -196,80 +190,23 @@ const Home = () => {
             )}
           </tbody>
         </table>
+        <Disclaimer />
       </div>
     </div>
   )
 }
 
-const HeaderItem = ({
-  title,
-  onSort,
-}: {
-  title: string
-  onSort?: () => void
-}) => {
-  return (
-    <th className='py-2'>
-      <span>{title}</span>
-      <span> </span>
-      {onSort && (
-        <button className='text-xs fong-regular' onClick={onSort}>
-          <FontAwesomeIcon icon={faSort} />
-        </button>
-      )}
-    </th>
-  )
-}
-
 export default Home
 
-const DownloadCSV = ({
-  jsonData,
-  fileName,
-}: {
-  jsonData: FrontGroup[]
-  fileName: string
-}) => {
-  const convertToCSV = (data: FrontGroup[]): string => {
-    if (data.length === 0) return ''
-
-    const columnDelimiter = ','
-    const lineDelimiter = '\n'
-    let keys = Object.keys(data[0] ?? {}) as (keyof FrontGroup)[]
-    keys = keys.filter((key) => key !== 'id' && key !== 'regionalBreakdown')
-    let result = keys.join(columnDelimiter) + lineDelimiter
-
-    data.forEach((item) => {
-      keys.forEach((key, index) => {
-        result += item[key]?.toString()
-        if (index < keys.length - 1) result += columnDelimiter
-      })
-      result += lineDelimiter
-    })
-
-    return result
+const toK = (num: number) => {
+  if (num < 1000) return num.toString()
+  if (num > 999 && num < 1000000) {
+    return `${(num / 1000).toFixed(1)}k`
   }
 
-  const downloadCSV = () => {
-    const csvData = convertToCSV(jsonData)
-    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.setAttribute('href', url)
-    link.setAttribute('download', fileName + '.csv')
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+  if (num > 999999 && num < 1000000000) {
+    return `${(num / 1000000).toFixed(1)}M`
   }
 
-  return (
-    <button
-      type='button'
-      className='px-3 py-1 bg-gray-200 text-gray-700 font-semibold flex items-center gap-x-2 rounded-md hover:bg-gray-300 transition-all'
-      onClick={downloadCSV}
-    >
-      <FontAwesomeIcon icon={faDownload} />
-      <span> Export</span>
-    </button>
-  )
+  return num
 }

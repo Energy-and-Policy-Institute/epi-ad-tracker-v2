@@ -2,6 +2,7 @@ import { type FrontGroup } from '@prisma/client'
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
 import dayjs from 'dayjs'
+import { AdRegionItem } from 'types'
 
 // [{'percentage': '0.000545', 'region': 'Idaho'}, {'percentage': '0.999455', 'region': 'Washington'}]
 //calulate WITH PERCENTAGE
@@ -97,6 +98,73 @@ export const frontGroupRouter = createTRPCRouter({
       })
       return frontGroup
     }),
+  get2: publicProcedure
+    .input(
+      z.object({
+        frontGroupId: z.string(),
+        startDate: z.string(),
+        endDate: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const frontGroup = await ctx.db.frontGroup.findUnique({
+        where: { id: input.frontGroupId },
+        include: {
+          ads: {
+            select: {
+              delivery_by_region: true,
+              ad_delivery_start_time: true,
+              ad_delivery_stop_time: true,
+              spend_lower_bound: true,
+              spend_upper_bound: true,
+            },
+          },
+        },
+      })
+
+      if (!frontGroup) return null
+
+      const filteredAds = frontGroup.ads.filter(
+        (ad) =>
+          ad.ad_delivery_start_time &&
+          ad.ad_delivery_stop_time &&
+          adDatesWithinRange(
+            ad.ad_delivery_start_time,
+            ad.ad_delivery_stop_time,
+            input.startDate,
+            input.endDate,
+          ),
+      )
+
+      const regionalBreakdown: {
+        state: string
+        lowerBound: number
+        upperBound: number
+      }[] = []
+
+      for (const ad of filteredAds) {
+        const parsedByRegion = AdRegionItem.array().parse(ad.delivery_by_region)
+        if (!parsedByRegion) continue
+        for (const region of parsedByRegion) {
+          const state = region.region
+          const existing = regionalBreakdown.find((rb) => rb.state === state)
+          const incrementUpperBound = region.percentage * ad.spend_upper_bound
+          const incrementLowerBound = region.percentage * ad.spend_lower_bound
+          if (existing) {
+            existing.lowerBound += incrementLowerBound
+            existing.upperBound += incrementUpperBound
+          } else {
+            regionalBreakdown.push({
+              state,
+              lowerBound: incrementLowerBound,
+              upperBound: incrementUpperBound,
+            })
+          }
+        }
+      }
+
+      return regionalBreakdown
+    }),
   ads: publicProcedure.query(async ({ ctx }) => {
     const ads = await ctx.db.ad.findMany({
       where: { ad_screenshot_url: { not: 'null' } },
@@ -146,3 +214,23 @@ const rankDictionary: RankDictionary = ids.reduce<RankDictionary>(
 )
 
 const getRank = (id: string) => rankDictionary[id] ?? 0
+
+const adDatesWithinRange = (
+  adStartDate: string,
+  adEndDate: string,
+  rangeStartDate: string,
+  rangeEndDate: string,
+) => {
+  const _adStartDate = dayjs(adStartDate)
+  const _adEndDate = dayjs(adEndDate)
+  const _rangeStartDate = dayjs(rangeStartDate)
+  const _rangeEndDate = dayjs(rangeEndDate)
+
+  const isBetween = (date: dayjs.Dayjs, start: dayjs.Dayjs, end: dayjs.Dayjs) =>
+    date.isAfter(start, 'date') && date.isBefore(end, 'date')
+  // ad in range if start date or end date is between the range
+  return (
+    isBetween(_adStartDate, _rangeStartDate, _rangeEndDate) ||
+    isBetween(_adEndDate, _rangeStartDate, _rangeEndDate)
+  )
+}

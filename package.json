@@ -31,6 +31,7 @@
     "puppeteer": "^22.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-usa-map": "^1.5.0",
     "superjson": "^2.2.1",
     "zod": "^3.22.4"
   },

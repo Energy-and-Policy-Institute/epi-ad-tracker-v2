@@ -22,7 +22,7 @@ export const ActiveChip = ({ active }: { active: boolean }) => {
   return (
     <div
       className={`rounded-md inline-flex px-2 h-[25px] items-center text-sm font-semibold ${
-        active ? 'bg-green-300 text-green-800' : 'bg-red-300 text-red-800'
+        active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
       }`}
     >
       {active ? 'Active' : 'Inactive'}

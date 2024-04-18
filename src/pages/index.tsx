@@ -160,11 +160,11 @@ const Home = () => {
                   <td className='px-5 py-2 text-center'>{row.rank}</td>
                   <td className='px-5 py-2'>
                     {row.active ? (
-                      <div className='rounded-md bg-green-300 text-green-800 inline-block px-2 text-sm font-semibold'>
+                      <div className='rounded-full bg-green-100 py-1 text-green-600 inline-block px-3 text-sm font-semibold'>
                         Active
                       </div>
                     ) : (
-                      <div className='rounded-md bg-red-300 text-red-800 inline-block px-2 text-sm font-semibold'>
+                      <div className='rounded-full bg-red-100 py-1 text-red-600 inline-block px-3 text-sm font-semibold'>
                         Inactive
                       </div>
                     )}

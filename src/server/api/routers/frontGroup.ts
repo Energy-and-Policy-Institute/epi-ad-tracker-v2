@@ -86,6 +86,19 @@ export const frontGroupRouter = createTRPCRouter({
         .sort((a, b) => b.adSpendUpper - a.adSpendUpper)
         .map((fg, i) => ({ ...fg, rank: i + 1 }))
     }),
+  getTenMostExpensiveAds: publicProcedure
+    .input(z.object({ frontGroupId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const ads = await ctx.db.ad.findMany({
+        where: {
+          ad_screenshot_url: { not: 'null' },
+          page_id: input.frontGroupId,
+        },
+        orderBy: { spend_upper_bound: 'desc' },
+        take: 10,
+      })
+      return ads
+    }),
   get: publicProcedure
     .input(
       z.object({

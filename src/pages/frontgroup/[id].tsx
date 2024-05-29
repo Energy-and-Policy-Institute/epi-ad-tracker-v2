@@ -2,7 +2,6 @@ import { useRouter } from 'next/router'
 import { api } from '~/utils/api'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
-import USAMap from 'react-usa-map'
 
 import {
   ActiveChip,
@@ -196,12 +195,3 @@ const Page = () => {
 }
 
 export default Page
-
-const mapData = {
-  NJ: {
-    fill: 'navy',
-  },
-  NY: {
-    fill: '#CC0000',
-  },
-}

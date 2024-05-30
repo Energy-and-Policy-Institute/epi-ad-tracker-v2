@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs'
+import { z } from 'zod'
 
 export const env = createEnv({
   /**
@@ -11,12 +11,15 @@ export const env = createEnv({
       .string()
       .url()
       .refine(
-        (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
-        "You forgot to change the default URL"
+        (str) => !str.includes('YOUR_MYSQL_URL_HERE'),
+        'You forgot to change the default URL',
       ),
     NODE_ENV: z
-      .enum(["development", "test", "production"])
-      .default("development"),
+      .enum(['development', 'test', 'production'])
+      .default('development'),
+    META_ACCESS_TOKEN: z.string(),
+    AWS_SECRET_ACCESS_KEY: z.string(),
+    AWS_ACCESS_KEY_ID: z.string(),
   },
 
   /**
@@ -35,6 +38,9 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN,
+    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
@@ -47,4 +53,4 @@ export const env = createEnv({
    * `SOME_VAR: z.string()` and `SOME_VAR=''` will throw an error.
    */
   emptyStringAsUndefined: true,
-});
+})

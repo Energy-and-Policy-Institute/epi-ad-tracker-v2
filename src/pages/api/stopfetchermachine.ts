@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { turnOnMachine } from '~/server/functions'
+import { turnOffMachine } from '~/server/functions'
 
 const INSTANCE_ID = 'i-055464ed9b76e9e3a'
 
@@ -11,10 +11,10 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   try {
-    await turnOnMachine(INSTANCE_ID)
-    res.status(200).json({ message: 'Started Successfully' })
+    await turnOffMachine(INSTANCE_ID)
+    res.status(200).json({ message: 'Stopped Successfully' })
   } catch (err) {
     console.error(err)
-    res.status(500).json({ message: 'Failed to start' })
+    res.status(500).json({ message: 'Failed to stop machine' })
   }
 }

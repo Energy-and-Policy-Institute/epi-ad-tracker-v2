@@ -108,24 +108,20 @@ export const frontGroupRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const frontGroup = await ctx.db.frontGroup.findUnique({
-        where: { id: input.frontGroupId },
-        include: {
-          ads: {
-            select: {
-              delivery_by_region: true,
-              ad_delivery_start_time: true,
-              ad_delivery_stop_time: true,
-              spend_lower_bound: true,
-              spend_upper_bound: true,
-            },
-          },
+      const ads = await ctx.db.ad.findMany({
+        where: { page_id: input.frontGroupId },
+        select: {
+          delivery_by_region: true,
+          ad_delivery_start_time: true,
+          ad_delivery_stop_time: true,
+          spend_lower_bound: true,
+          spend_upper_bound: true,
+          page_id: true,
+          page_name: true,
         },
       })
 
-      if (!frontGroup) return null
-
-      const filteredAds = frontGroup.ads.filter(
+      const filteredAds = ads.filter(
         (ad) =>
           ad.ad_delivery_start_time &&
           ad.ad_delivery_stop_time &&
@@ -147,7 +143,7 @@ export const frontGroupRouter = createTRPCRouter({
 
       let active = false
       let lastAdDate = null
-      for (const ad of frontGroup.ads) {
+      for (const ad of ads) {
         if (getInLast3Months(ad.ad_delivery_stop_time)) active = true
         if (
           dayjs(ad.ad_delivery_stop_time).isAfter(lastAdDate ?? '2000-01-01')
@@ -183,11 +179,9 @@ export const frontGroupRouter = createTRPCRouter({
         0,
       )
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { ads, ...rest } = frontGroup
-
       return {
-        ...rest,
+        id: ads[0]?.page_id,
+        name: ads[0]?.page_name,
         lastAdDate,
         active,
         totalAds,

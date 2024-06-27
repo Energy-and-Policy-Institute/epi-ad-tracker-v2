@@ -10,6 +10,7 @@ const config = {
   images: {
     domains: [
       'epi-ad-screenshots.s3.us-east-2.amazonaws.com',
+      'epi-ad-screenshot.s3.us-east-2.amazonaws.com',
       'i5.walmartimages.com',
     ],
   },

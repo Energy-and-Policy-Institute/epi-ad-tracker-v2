@@ -38,8 +38,6 @@ const Home = () => {
   const [query, setQuery] = useState<string>('')
 
   const sorted = useMemo(() => {
-    console.log('updating sorted', sortBy, sortDirection)
-
     if (!frontGroups) return null
 
     let sorted = frontGroups.sort((a, b) => a.rank - b.rank).slice()
@@ -55,7 +53,6 @@ const Home = () => {
     }
 
     if (sortBy === 'numAds') {
-      console.log('here')
       sorted = frontGroups.sort((a, b) => a.numAds - b.numAds)
     }
 

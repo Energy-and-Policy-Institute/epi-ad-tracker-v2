@@ -43,6 +43,9 @@ const Page = () => {
 
     let sorted = frontGroup.regionalBreakdown
       .sort((a, b) => a.upperBound - b.upperBound)
+      .filter(
+        (r) => Math.floor(r.upperBound) > 0 && Math.floor(r.lowerBound) > 0,
+      )
       .slice()
 
     if (sortBy === 'state') {
@@ -55,7 +58,6 @@ const Page = () => {
   }, [frontGroup?.regionalBreakdown, sortBy, sortDirection])
 
   const handleSortChange = (sb: SortOptions) => {
-    console.log('handleSortChange', sb)
     if (sortBy === sb) {
       setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
     } else {
@@ -64,8 +66,8 @@ const Page = () => {
     }
   }
 
-  const [adShown, setAdsShown] = useState(0)
-
+  const [adShown, setAdShown] = useState(0)
+  const adUrl = tenMost?.[adShown]?.ad_screenshot_url
   const resetDates = () => {
     setStartDate(defaultStartDate)
     setEndDate(defaultEndDate)
@@ -110,8 +112,8 @@ const Page = () => {
         </div>
         <p className='text-secondary pb-5'>
           During this time frame, {frontGroup.name} ran{' '}
-          {withCommas(frontGroup.numAds)} <b>ad(s)</b> on Meta{"'"}s platforms,
-          spending at least ${withCommas(frontGroup.adSpendUpper)}.
+          {withCommas(frontGroup.totalAds)} <b>ad(s)</b> on Meta{"'"}s
+          platforms, spending at least ${withCommas(frontGroup.totalSpend)}.
           <br />
           <br />
           Below is it{"'"}s ad spending by region:
@@ -159,25 +161,21 @@ const Page = () => {
                 <Image
                   width={500}
                   height={500}
-                  src={
-                    (tenMost?.[adShown]?.ad_screenshot_url.length ?? 0) > 0
-                      ? tenMost?.[adShown]?.ad_screenshot_url ?? ''
-                      : 'https://i5.walmartimages.com/seo/Fat-Cat-Plush-Toy-Doll-Stuffed-Animal-Toys-Funny-Cartoon-Cat-Garfield-Plush-Doll-Children-Birthday-Gift-30cm-Orange_474d6b6c-8767-44f2-9715-05bd8ef8bb9b.d3a6106cf73df8c331211d5c7ad87c0d.jpeg?odnHeight=640&odnWidth=640&odnBg=FFFFFF'
-                  }
+                  src={adUrl ?? ''}
                   alt='ad screenshot'
                 />
                 <div className='flex flex-col items-center justify-center gap-y-2 px-2'>
                   <button
-                    onClick={() => setAdsShown((prev) => prev - 1)}
+                    onClick={() => setAdShown((prev) => prev - 1)}
                     disabled={adShown === 0}
-                    className='bg-secondary text-white rounded-full h-10 w-10'
+                    className='bg-secondary text-white rounded-full h-10 w-10 disabled:opacity-30'
                   >
                     <FontAwesomeIcon icon={faChevronUp} size='1x' />
                   </button>
                   <button
-                    onClick={() => setAdsShown((prev) => prev + 1)}
+                    onClick={() => setAdShown((prev) => prev + 1)}
                     disabled={adShown === tenMost?.length - 1}
-                    className='bg-secondary text-white rounded-full h-10 w-10'
+                    className='bg-secondary text-white rounded-full h-10 w-10 disabled:opacity-30'
                   >
                     <FontAwesomeIcon icon={faChevronDown} size='1x' />
                   </button>

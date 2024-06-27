@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/startfetchermachine",
+      "schedule": "0 7 * * 1"
+    },
+    {
+      "path": "/api/metafetch",
+      "schedule": "2 7 * * 1"
+    },
+    {
+      "path": "/api/stopfetchermachine",
+      "schedule": "0 8 * * 1"
+    }
+  ]
+}

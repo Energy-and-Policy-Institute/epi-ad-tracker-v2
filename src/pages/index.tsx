@@ -28,6 +28,18 @@ const Home = () => {
       endDate,
     })
 
+  const startMachine = async () => {
+    await fetch('/api/startfetchermachine')
+  }
+
+  const stopMachine = async () => {
+    await fetch('/api/stopfetchermachine')
+  }
+
+  const runScript = async () => {
+    await fetch('/api/metafetch')
+  }
+
   const totalAds = frontGroups?.reduce((acc, curr) => acc + curr.numAds, 0)
   const totalSpendUpper = frontGroups?.reduce(
     (acc, curr) => acc + curr.adSpendUpper,
@@ -189,6 +201,13 @@ const Home = () => {
         </table>
         <Disclaimer />
       </div>
+      {/* <div>
+        <button onClick={startMachine}>Start Machine</button>
+        <span> | </span>
+        <button onClick={runScript}>Run Script</button>
+        <span> | </span>
+        <button onClick={stopMachine}>Stop Machine</button>
+      </div> */}
     </div>
   )
 }

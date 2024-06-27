@@ -20,6 +20,8 @@ export const env = createEnv({
     META_ACCESS_TOKEN: z.string(),
     AWS_SECRET_ACCESS_KEY: z.string(),
     AWS_ACCESS_KEY_ID: z.string(),
+    REGION: z.string(),
+    INSTANCE_ID: z.string(),
   },
 
   /**
@@ -41,6 +43,8 @@ export const env = createEnv({
     META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN,
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+    REGION: process.env.REGION,
+    INSTANCE_ID: process.env.INSTANCE_ID,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

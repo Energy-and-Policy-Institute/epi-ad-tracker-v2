@@ -111,8 +111,16 @@ export const Disclaimer = () => {
       >
         Shelby Green
       </a>{' '}
-      with the Energy and Policy Institute. Having issues using the tool or want
-      to make a suggestion? Please{' '}
+      from the Energy and Policy Institute with the help of{' '}
+      <a
+        href={
+          'https://www.beginroot.com/person/a5a7499c-6c80-4ebf-963c-e5067b6fdccd'
+        }
+        className='text-blue-500 underline'
+      >
+        Will White
+      </a>
+      . Having issues using the tool or want to make a suggestion? Please{' '}
       <a
         href='https://www.energyandpolicy.org/contact-us/'
         className='text-blue-500 underline'

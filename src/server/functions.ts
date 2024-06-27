@@ -47,7 +47,7 @@ export const turnOnMachine = async (instanceId: string) => {
 }
 
 export const runDataPull = async (instanceId = INSTANCE_ID) => {
-  const cmd = `bash /home/ec2-user/epi-ad-tracker-v2/SCRIPTS/runscript.sh > /home/ec2-user/epi-ad-tracker-v2/log1.txt 2>&1`
+  const cmd = `bash /home/ec2-user/epi-ad-tracker-v2/SCRIPTS/runscript.sh`
 
   const params = {
     InstanceIds: [instanceId],

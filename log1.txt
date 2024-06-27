@@ -1,0 +1,76 @@
+/home/ec2-user/epi-ad-tracker-v2/SCRIPTS/fetch-facebook-ads-checkpoint.py:320: DeprecationWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  topTen = df.groupby('page_name').apply(lambda x: x.nlargest(10, 'spend.upper_bound')).reset_index(drop=True)[['page_name', 'id']].groupby('page_name')['id'].apply(list).reset_index().rename(columns={'page_name':'name', 'id':'topTenAds'})
+got here -2
+got here -1
+got here
+106039214814684
+.....
+
+482100658584410
+...............................................
+
+[
+  {
+    "ads": "We Stand For Energy",
+    "count": 1151
+  },
+  {
+    "ads": "Affordable Energy Coalition",
+    "count": 117
+  }
+]
+1268
+processing batch 0 of 6
+File 736256877347788.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/736256877347788.png
+File 4829327600484124.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/4829327600484124.png
+File 1100851353983779.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/1100851353983779.png
+File 1051295969042171.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/1051295969042171.png
+File 251959166943887.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/251959166943887.png
+File 290021952702509.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/290021952702509.png
+File 1005177973627610.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/1005177973627610.png
+File 961044268018122.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/961044268018122.png
+File 174395667943467.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/174395667943467.png
+File 503669077317551.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/503669077317551.png
+File 1128561538148607.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/1128561538148607.png
+File 261751516715503.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/261751516715503.png
+success
+processing batch 1 of 6
+File 602874478424814.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/602874478424814.png
+File 1001005861256485.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/1001005861256485.png
+File 805897700902134.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/805897700902134.png
+File 193801890132821.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/193801890132821.png
+File 893262105110873.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/893262105110873.png
+File 239999058382770.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/239999058382770.png
+File 770431360800028.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/770431360800028.png
+File 875270109858637.png exists in epi-ad-screenshot
+https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/875270109858637.png
+success
+processing batch 2 of 6
+success
+processing batch 3 of 6
+success
+processing batch 4 of 6
+success
+processing batch 5 of 6
+success
+processing batch 6 of 6
+success

@@ -22,6 +22,7 @@ export const env = createEnv({
     AWS_ACCESS_KEY_ID: z.string(),
     REGION: z.string(),
     INSTANCE_ID: z.string(),
+    CHRON_SECRET: z.string(),
   },
 
   /**
@@ -38,6 +39,7 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
+    CHRON_SECRET: process.env.CHRON_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN,

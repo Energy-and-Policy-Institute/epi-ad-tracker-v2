@@ -2,15 +2,20 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { env } from '~/env'
 import { runDataPull } from '~/server/functions'
-const INSTANCE_ID = 'i-055464ed9b76e9e3a'
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  // eslint-disable-next-line @typescript-eslint/dot-notation
+  if (req.headers['Authorization'] !== `Bearer ${env.CRON_SECRET}`) {
+    return res.status(401).end('Unauthorized')
+  }
+
   try {
-    await runDataPull(INSTANCE_ID)
+    await runDataPull(env.INSTANCE_ID)
     res.status(200).json({ message: 'Started Successfully' })
   } catch (err) {
     console.error(err)

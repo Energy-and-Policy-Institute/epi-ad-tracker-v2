@@ -4,6 +4,14 @@
 # In[ ]:
 
 
+import sys
+# uncomment if you do not have these installed. DO NOT COMMIT UNCOMMENTED!!
+# !{sys.executable} -m pip install boto3
+# !{sys.executable} -m pip install botocore
+# !{sys.executable} -m pip install selenium
+# !{sys.executable} -m pip install pandas
+# !{sys.executable} -m pip install numpy
+# !{sys.executable} -m pip install python-dotenv
 
 # In[32]:
 
@@ -26,19 +34,14 @@ from botocore.exceptions import ClientError
 from selenium import webdriver
 from dotenv import load_dotenv
 
-
 # In[24]:
 
-print('got here -2')
 
 load_dotenv()
 
 ACCESS_TOKEN = os.getenv("META_ACCESS_TOKEN")
 AWS_SECRET_ACCESS_KEY=os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_ACCESS_KEY_ID=os.getenv("AWS_ACCESS_KEY_ID")
-
-print('got here -1')
-
 
 # In[40]:
 
@@ -201,8 +204,33 @@ def delete_file(filename):
 # upload_to_s3("screenshot.png", "epi-ad-screenshot", "screenshot.png")
 # delete_file("screenshot.png")
 
-
 # In[27]:
+
+
+#  ### list of page IDs
+# idList = ['106039214814684', # 1
+# # '102281724942742', # 2
+# # '738063612887865', # 3
+# # '341751646428117', # 4
+# # '591566840920364', # 5
+# # '105502284969626', # 6
+# # '49560242814',   # 7
+# # '101691091213750',  # 8
+# # # '113891694102', removed Energy Citizens 
+# # '292970844058835', # 9
+# # '100801038449520',  # 10
+# # '108095672108380',  # 11
+# # '111394533709201',  # 12
+# # '107500120800840',  # 13
+# # '101242238726088',    # 14
+# # '237209147160346',  # 15
+# # '110124925319299',  # 16
+# '396341921119746',  # 17
+# '108203188195224',  # 18
+# '106656845034469',  # 19
+# #'47710973068', # 20
+# #'482100658584410'  # 21
+# ]
 
 idList = ['106039214814684', #affordable energy coalition
 '102281724942742',
@@ -226,9 +254,6 @@ idList = ['106039214814684', #affordable energy coalition
 '106656845034469',
 '47710973068',
 '482100658584410']
-
-print('got here')
-
 
 # In[36]:
 
@@ -310,7 +335,6 @@ df['page_name'] = df['page_name'].replace({'Natural Gas: Limitless Opportunity':
 
 resjson = df[['page_name', 'id', 'spend.lower_bound', 'spend.upper_bound']].groupby('page_name').agg({'id':'count', 'spend.lower_bound': 'sum', 'spend.upper_bound': 'sum'}).reset_index().rename(columns={'page_name':'name', 'id':'ads', 'spend.lower_bound': 'lowerAmount', 'spend.upper_bound':'upperAmount'}).sort_values(by="upperAmount", ascending=False).reset_index(drop=True)
 
-
 # 
 
 # In[59]:
@@ -319,7 +343,6 @@ resjson = df[['page_name', 'id', 'spend.lower_bound', 'spend.upper_bound']].grou
 # get the ten most expensive ads for each page, put ids in a list
 topTen = df.groupby('page_name').apply(lambda x: x.nlargest(10, 'spend.upper_bound')).reset_index(drop=True)[['page_name', 'id']].groupby('page_name')['id'].apply(list).reset_index().rename(columns={'page_name':'name', 'id':'topTenAds'})
 topTenIds = sum(topTen['topTenAds'], [])
-
 
 # In[60]:
 
@@ -405,6 +428,3 @@ for i in range(0, len(items), batch_size):
         print(f"Error: {e} \n\n {json_object}")
 
 #res.to_csv("../all-front-group-ads-070723.csv")
-
-
-

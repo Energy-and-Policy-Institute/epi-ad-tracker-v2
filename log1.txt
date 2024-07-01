@@ -1,76 +1,37 @@
-/home/ec2-user/epi-ad-tracker-v2/SCRIPTS/fetch-facebook-ads-checkpoint.py:320: DeprecationWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
-  topTen = df.groupby('page_name').apply(lambda x: x.nlargest(10, 'spend.upper_bound')).reset_index(drop=True)[['page_name', 'id']].groupby('page_name')['id'].apply(list).reset_index().rename(columns={'page_name':'name', 'id':'topTenAds'})
-got here -2
-got here -1
-got here
 106039214814684
 .....
 
-482100658584410
-...............................................
-
-[
-  {
-    "ads": "We Stand For Energy",
-    "count": 1151
-  },
-  {
-    "ads": "Affordable Energy Coalition",
-    "count": 117
-  }
-]
-1268
-processing batch 0 of 6
-File 736256877347788.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/736256877347788.png
-File 4829327600484124.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/4829327600484124.png
-File 1100851353983779.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/1100851353983779.png
-File 1051295969042171.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/1051295969042171.png
-File 251959166943887.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/251959166943887.png
-File 290021952702509.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/290021952702509.png
-File 1005177973627610.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/1005177973627610.png
-File 961044268018122.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/961044268018122.png
-File 174395667943467.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/174395667943467.png
-File 503669077317551.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/503669077317551.png
-File 1128561538148607.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/1128561538148607.png
-File 261751516715503.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/261751516715503.png
-success
-processing batch 1 of 6
-File 602874478424814.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/602874478424814.png
-File 1001005861256485.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/1001005861256485.png
-File 805897700902134.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/805897700902134.png
-File 193801890132821.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/193801890132821.png
-File 893262105110873.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/893262105110873.png
-File 239999058382770.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/239999058382770.png
-File 770431360800028.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/770431360800028.png
-File 875270109858637.png exists in epi-ad-screenshot
-https://epi-ad-screenshot.s3.us-east-2.amazonaws.com/875270109858637.png
-success
-processing batch 2 of 6
-success
-processing batch 3 of 6
-success
-processing batch 4 of 6
-success
-processing batch 5 of 6
-success
-processing batch 6 of 6
-success
+102281724942742
+....................Traceback (most recent call last):
+  File "/home/ec2-user/epi-ad-tracker-v2/SCRIPTS/fetch-facebook-ads-checkpoint.py", line 295, in <module>
+    response = requests.get(next_link)
+  File "/usr/lib/python3.9/site-packages/requests/api.py", line 76, in get
+    return request('get', url, params=params, **kwargs)
+  File "/usr/lib/python3.9/site-packages/requests/api.py", line 61, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/usr/lib/python3.9/site-packages/requests/sessions.py", line 544, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/lib/python3.9/site-packages/requests/sessions.py", line 657, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/lib/python3.9/site-packages/requests/adapters.py", line 439, in send
+    resp = conn.urlopen(
+  File "/usr/local/lib/python3.9/site-packages/urllib3/connectionpool.py", line 715, in urlopen
+    httplib_response = self._make_request(
+  File "/usr/local/lib/python3.9/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/usr/local/lib/python3.9/site-packages/urllib3/connectionpool.py", line 462, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/lib64/python3.9/http/client.py", line 1377, in getresponse
+    response.begin()
+  File "/usr/lib64/python3.9/http/client.py", line 320, in begin
+    version, status, reason = self._read_status()
+  File "/usr/lib64/python3.9/http/client.py", line 281, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/usr/lib64/python3.9/socket.py", line 704, in readinto
+    return self._sock.recv_into(b)
+  File "/usr/lib64/python3.9/ssl.py", line 1275, in recv_into
+    return self.read(nbytes, buffer)
+  File "/usr/lib64/python3.9/ssl.py", line 1133, in read
+    return self._sslobj.read(len, buffer)
+KeyboardInterrupt

@@ -37,6 +37,8 @@ const Page = () => {
   const { data: tenMost } = api.frontGroup.getTenMostExpensiveAds.useQuery({
     frontGroupId: id,
   })
+  const ROWS_SHOWN_DEFAULT = 7
+  const [rowsShown, setRowsShown] = useState(ROWS_SHOWN_DEFAULT)
 
   const sorted = useMemo(() => {
     if (!frontGroup?.regionalBreakdown) return null
@@ -54,8 +56,24 @@ const Page = () => {
       )
     }
 
-    return sortDirection === 'asc' ? sorted : sorted.slice().reverse()
+    sorted = sortDirection === 'asc' ? sorted : sorted.slice().reverse()
+    return sorted
   }, [frontGroup?.regionalBreakdown, sortBy, sortDirection])
+
+  const onShowMore = () => {
+    // const STEP_SIZE = 5
+    if (!sorted) return
+    const max = sorted.length
+    setRowsShown(max)
+  }
+
+  const onShowLess = () => {
+    setRowsShown(ROWS_SHOWN_DEFAULT)
+  }
+
+  const showMoreVisible = rowsShown < (sorted?.length ?? 0)
+  const showLessVisible = rowsShown > ROWS_SHOWN_DEFAULT
+  const numMore = (sorted?.length ?? 0) - rowsShown
 
   const handleSortChange = (sb: SortOptions) => {
     if (sortBy === sb) {
@@ -107,7 +125,7 @@ const Page = () => {
           )}
           <DownloadCSVButton
             fileName={`${frontGroup.name}_${dayjs(startDate).format('MM-DD-YY')}_to_${dayjs(endDate).format('MM-DD-YY')}`}
-            csv={convertToCSV(frontGroup.regionalBreakdown, [])}
+            csv={convertToCSV(frontGroup.exportableAds, [])}
           />
         </div>
         <p className='text-secondary pb-5'>
@@ -119,34 +137,54 @@ const Page = () => {
           Below is it{"'"}s ad spending by region:
         </p>
         {sorted && (
-          <table className='w-full'>
-            <thead>
-              <tr className='bg-backgroundLight'>
-                <HeaderItem
-                  title='State'
-                  onSort={() => handleSortChange('state')}
-                />
-                <HeaderItem
-                  title='Money Spent'
-                  onSort={() => handleSortChange('spend')}
-                />
-              </tr>
-            </thead>
-            <tbody>
-              {sorted.map((row, i) => (
-                <tr key={i} className='border-b border-backgroundLight'>
-                  <td className='px-5 py-2 text-secondary text-center'>
-                    {row.state}
-                  </td>
-                  <td className='px-5 py-2 text-secondary'>
-                    <div className='pl-[100px]'>
-                      {`$${row.lowerBound.toFixed(0)} - $${row.upperBound.toFixed(0)}`}
-                    </div>
-                  </td>
+          <>
+            <table className='w-full'>
+              <thead>
+                <tr className='bg-backgroundLight'>
+                  <HeaderItem
+                    title='State'
+                    onSort={() => handleSortChange('state')}
+                  />
+                  <HeaderItem
+                    title='Money Spent'
+                    onSort={() => handleSortChange('spend')}
+                  />
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {sorted.slice(0, rowsShown).map((row, i) => (
+                  <tr key={i} className='border-b border-backgroundLight'>
+                    <td className='px-5 py-2 text-secondary text-center'>
+                      {row.state}
+                    </td>
+                    <td className='px-5 py-2 text-secondary'>
+                      <div className='pl-[100px]'>
+                        {`$${row.lowerBound.toFixed(0)} - $${row.upperBound.toFixed(0)}`}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className='flex justify-center gap-x-3 w-full py-2'>
+              {showMoreVisible && (
+                <button
+                  onClick={onShowMore}
+                  className='text-secondary text-sm underline'
+                >
+                  Show {numMore} more...
+                </button>
+              )}
+              {showLessVisible && (
+                <button
+                  onClick={onShowLess}
+                  className='text-secondary text-sm underline'
+                >
+                  Show less
+                </button>
+              )}
+            </div>
+          </>
         )}
         {tenMost && (
           <>
@@ -158,6 +196,7 @@ const Page = () => {
               <div className='flex relative'>
                 <div className='absolute top-2 right-2 text-secondary tracking-wider'>{`${adShown + 1}/${tenMost?.length}`}</div>
                 <div className='font-bold'>{`$${tenMost?.[adShown]?.spend_upper_bound}`}</div>
+                {/* <a href={tenMost?.[adShown]?.ad_snapshot_url}>Snapshoturl</a> */}
                 <Image
                   width={500}
                   height={500}
@@ -184,8 +223,6 @@ const Page = () => {
             </div>
           </>
         )}
-        {/* <div className='text-secondary pt-7'>Ad spend by region (map)</div> */}
-        {/* <USAMap customize={mapData} width={600} /> */}
         <Disclaimer />
       </div>
     </div>

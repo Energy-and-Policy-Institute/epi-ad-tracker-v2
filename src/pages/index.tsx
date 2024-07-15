@@ -45,7 +45,7 @@ const Home = () => {
     (acc, curr) => acc + curr.adSpendUpper,
     0,
   )
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>()
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [sortBy, setSortBy] = useState<SortOptions>()
   const [query, setQuery] = useState<string>('')
 
@@ -103,7 +103,9 @@ const Home = () => {
         <div className='flex gap-x-3 border-b border-background py-2'>
           <div className='flex gap-x-1'>
             <span className='text-secondary'>All Groups:</span>
-            <span className='font-semibold tracking-wide'>{totalAds}</span>
+            <span className='font-semibold tracking-wide'>
+              {sorted?.length ?? 0}
+            </span>
           </div>
           <div className='flex gap-x-1'>
             <span className='text-secondary'>Total Spent:</span>

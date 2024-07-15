@@ -10,7 +10,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   // eslint-disable-next-line @typescript-eslint/dot-notation
-  if (req.headers['Authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (req.headers['Authorization'] !== `Bearer ${env.CRON_SECRET}`) {
     return res.status(401).end('Unauthorized')
   }
 

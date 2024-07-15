@@ -113,6 +113,10 @@ export const frontGroupRouter = createTRPCRouter({
         select: {
           delivery_by_region: true,
           ad_delivery_start_time: true,
+          ad_snapshot_url: true,
+          bylines: true,
+          impressions_lower_bound: true,
+          impressions_upper_bound: true,
           ad_delivery_stop_time: true,
           spend_lower_bound: true,
           spend_upper_bound: true,
@@ -187,6 +191,17 @@ export const frontGroupRouter = createTRPCRouter({
         totalAds,
         totalSpend,
         regionalBreakdown,
+        exportableAds: filteredAds.map((ad) => ({
+          adSnapshotUrl: ad.ad_snapshot_url,
+          frontGroupName: ad.page_name,
+          bylines: ad.bylines,
+          impressionsLowerBound: ad.impressions_lower_bound,
+          impressionsUpperBound: ad.impressions_upper_bound,
+          adDeliveryStartTime: ad.ad_delivery_start_time,
+          adDeliveryStopTime: ad.ad_delivery_stop_time,
+          spendLowerBound: ad.spend_lower_bound,
+          spendUpperBound: ad.spend_upper_bound,
+        })),
       }
     }),
   ads: publicProcedure.query(async ({ ctx }) => {

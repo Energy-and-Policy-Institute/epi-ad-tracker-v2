@@ -4,6 +4,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { env } from '~/env'
 import { turnOffMachine } from '~/server/functions'
+import { db } from '~/server/db'
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,6 +14,13 @@ export default async function handler(
   if (req.headers['Authorization'] !== `Bearer ${env.CRON_SECRET}`) {
     return res.status(401).end('Unauthorized')
   }
+
+  // Update all front groups to reflect the current time as the last update
+  await db.frontGroup.updateMany({
+    data: {
+      updatedAt: new Date(),
+    },
+  })
 
   try {
     await turnOffMachine(env.INSTANCE_ID)

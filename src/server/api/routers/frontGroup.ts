@@ -34,7 +34,7 @@ export const frontGroupRouter = createTRPCRouter({
       })
 
       const frontGroups: Omit<FrontGroup, 'createdAt' | 'updatedAt'>[] = []
-      let inLast3Months = false
+
       for (const ad of ads) {
         // NOTE: this filtering could probably be done in the query for speed if it becomes an issue
         const getInRange = () => {
@@ -58,7 +58,7 @@ export const frontGroupRouter = createTRPCRouter({
         }
 
         const adInRange = getInRange()
-        if (getInLast3Months(ad.ad_delivery_stop_time)) inLast3Months = true
+        const inLast3Months = getInLast3Months(ad.ad_delivery_stop_time)
 
         // create the front group for the ad if it doesn't exist already
         if (!frontGroups.find((fg) => fg.id === ad.page_id)) {
@@ -78,6 +78,7 @@ export const frontGroupRouter = createTRPCRouter({
             frontGroup.numAds += 1
             frontGroup.adSpendUpper += ad.spend_upper_bound
             frontGroup.adSpendLower += ad.spend_lower_bound
+            frontGroup.active = inLast3Months || frontGroup.active // masking
           }
         }
       }
@@ -97,8 +98,24 @@ export const frontGroupRouter = createTRPCRouter({
         orderBy: { spend_upper_bound: 'desc' },
         take: 10,
       })
-      return ads
+
+      const includeLargestRegion = ads.map((a) => {
+        const deliveryByRegion = AdRegionItem.array().parse(
+          a.delivery_by_region,
+        )
+        const largestRegion = deliveryByRegion.reduce((acc, curr) => {
+          return acc.percentage > curr.percentage ? acc : curr
+        })
+        return { ...a, largestRegion }
+      })
+      return includeLargestRegion
     }),
+  getStatic: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const frontGroup = await ctx.db.frontGroup.findFirst({
+      where: { id: input },
+    })
+    return frontGroup
+  }),
   get: publicProcedure
     .input(
       z.object({
@@ -108,11 +125,20 @@ export const frontGroupRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
+      const ads2 = await ctx.db.ad.findMany({
+        select: {
+          id: true,
+          page_id: true,
+          page_name: true,
+        },
+      })
+
       const ads = await ctx.db.ad.findMany({
         where: { page_id: input.frontGroupId },
         select: {
           delivery_by_region: true,
           ad_delivery_start_time: true,
+          ad_creative_bodies: true,
           ad_snapshot_url: true,
           bylines: true,
           impressions_lower_bound: true,
@@ -124,6 +150,10 @@ export const frontGroupRouter = createTRPCRouter({
           page_name: true,
         },
       })
+
+      for (const ad of ads) {
+        if (!ad.delivery_by_region) ad.delivery_by_region = '[]'
+      }
 
       const filteredAds = ads.filter(
         (ad) =>
@@ -183,16 +213,23 @@ export const frontGroupRouter = createTRPCRouter({
         0,
       )
 
+      const fg = await ctx.db.frontGroup.findFirst({
+        where: { id: input.frontGroupId },
+        select: {
+          updatedAt: true,
+        },
+      })
+
       return {
         id: ads[0]?.page_id,
         name: ads[0]?.page_name,
         lastAdDate,
         active,
+        updatedAt: fg?.updatedAt,
         totalAds,
         totalSpend,
         regionalBreakdown,
         exportableAds: filteredAds.map((ad) => ({
-          adSnapshotUrl: ad.ad_snapshot_url,
           frontGroupName: ad.page_name,
           bylines: ad.bylines,
           impressionsLowerBound: ad.impressions_lower_bound,
@@ -201,6 +238,7 @@ export const frontGroupRouter = createTRPCRouter({
           adDeliveryStopTime: ad.ad_delivery_stop_time,
           spendLowerBound: ad.spend_lower_bound,
           spendUpperBound: ad.spend_upper_bound,
+          adBlurb: ad.ad_creative_bodies.join(' '),
         })),
       }
     }),
@@ -276,5 +314,5 @@ const adDatesWithinRange = (
 
 const getInLast3Months = (date: string | null) => {
   if (!date) return false
-  return dayjs(date).isAfter(dayjs().subtract(6, 'month'))
+  return dayjs(date).isAfter(dayjs().subtract(3, 'month'))
 }

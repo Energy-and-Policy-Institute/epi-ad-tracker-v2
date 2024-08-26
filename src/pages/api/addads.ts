@@ -59,6 +59,22 @@ export default async function handler(
         .map((ad) => {
           const existingAd = existingAdsMap.get(ad.id)
 
+          // update the front group
+          void db.frontGroup.upsert({
+            where: { id: ad.page_id },
+            update: {
+              updatedAt: new Date(),
+            },
+            create: {
+              id: ad.page_id,
+              updatedAt: new Date(), // this is the only data that matters
+              name: ad.page_name,
+              numAds: 0,
+              adSpendUpper: 0,
+              adSpendLower: 0,
+            },
+          })
+
           if (!existingAd) {
             return db.ad.create({ data: ad })
           } else if (existingAd.ad_screenshot_url !== ad.ad_screenshot_url) {

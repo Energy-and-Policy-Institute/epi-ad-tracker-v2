@@ -10,11 +10,11 @@ export function TableBody({ className, ...props }) {
     return _jsx("tbody", { className: cn("[&_tr:last-child]:border-0", className), ...props });
 }
 export function TableRow({ className, ...props }) {
-    return (_jsx("tr", { className: cn("border-b border-border/70 transition-colors hover:bg-backgroundLight/40", className), ...props }));
+    return (_jsx("tr", { className: cn("border-b border-border transition-colors hover:bg-muted/50", className), ...props }));
 }
 export function TableHead({ className, ...props }) {
-    return (_jsx("th", { className: cn("h-12 px-4 text-left align-middle text-xs font-semibold uppercase tracking-[0.12em] text-secondary", className), ...props }));
+    return (_jsx("th", { className: cn("h-10 px-3 text-left align-middle text-xs font-medium text-secondary", className), ...props }));
 }
 export function TableCell({ className, ...props }) {
-    return _jsx("td", { className: cn("px-4 py-4 align-middle text-primary", className), ...props });
+    return _jsx("td", { className: cn("px-3 py-3 align-middle text-primary", className), ...props });
 }

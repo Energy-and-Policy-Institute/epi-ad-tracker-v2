@@ -3,26 +3,40 @@ import type { HTMLAttributes } from "react";
 import { cn } from "./lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em]",
+  "inline-flex items-center gap-1.5 text-xs font-medium",
   {
     defaultVariants: {
       variant: "default"
     },
     variants: {
       variant: {
-        default: "bg-backgroundLight text-primary",
-        danger: "bg-danger-soft text-danger",
-        info: "bg-accent-soft text-accent",
-        success: "bg-success-soft text-success"
+        default: "text-secondary",
+        danger: "text-danger",
+        info: "text-accent",
+        success: "text-success"
       }
     }
   }
 );
 
 export interface BadgeProps
-  extends HTMLAttributes<HTMLDivElement>,
+  extends HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {}
 
-export function Badge({ className, variant, ...props }: BadgeProps) {
-  return <div className={cn(badgeVariants({ className, variant }))} {...props} />;
+export function Badge({ className, variant, children, ...props }: BadgeProps) {
+  const dotColor =
+    variant === "success"
+      ? "bg-success"
+      : variant === "danger"
+        ? "bg-danger"
+        : variant === "info"
+          ? "bg-accent"
+          : "bg-secondary";
+
+  return (
+    <span className={cn(badgeVariants({ className, variant }))} {...props}>
+      <span className={cn("inline-block h-1.5 w-1.5 rounded-full", dotColor)} />
+      {children}
+    </span>
+  );
 }

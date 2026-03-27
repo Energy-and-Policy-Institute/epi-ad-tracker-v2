@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import { toISODate } from "./format";
 
 export const DEFAULT_START_DATE = "2018-05-24";
-export const DEFAULT_END_DATE = dayjs().format("YYYY-MM-DD");
+export const DEFAULT_END_DATE = toISODate(new Date());

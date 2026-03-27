@@ -1,0 +1,50 @@
+{
+  "name": "legacy-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "SKIP_ENV_VALIDATION=1 next build",
+    "dev": "next dev -p 3000",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint --max-warnings=0 --ext .js,.ts,.tsx src",
+    "start": "next start",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ec2": "^3.585.0",
+    "@aws-sdk/client-ssm": "^3.583.0",
+    "@aws-sdk/types": "^3.577.0",
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@repo/api": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/tailwind-config": "workspace:*",
+    "@t3-oss/env-nextjs": "^0.12.0",
+    "@tanstack/react-query": "^5.66.11",
+    "@trpc/client": "^11.0.0",
+    "@trpc/next": "^11.0.0",
+    "@trpc/react-query": "^11.0.0",
+    "@trpc/server": "^11.0.0",
+    "@vercel/analytics": "^1.4.1",
+    "dayjs": "^1.11.13",
+    "lodash": "^4.17.21",
+    "next": "^14.2.25",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "superjson": "^2.2.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.4",
+    "@types/lodash": "^4.17.16",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "eslint": "^8.57.1",
+    "tailwindcss": "^4.1.4"
+  }
+}

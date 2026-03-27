@@ -1,0 +1,32 @@
+@theme {
+  --color-primary: #111928;
+  --color-secondary: #637381;
+  --color-background: #dadada;
+  --color-backgroundLight: #eeeeee;
+  --color-backgroundDark: #aaaaaa;
+  --color-reset: #60a5fa;
+  --color-surface: #ffffff;
+  --color-muted: #f5f7fa;
+  --color-border: #d8dee6;
+  --color-success: #0f766e;
+  --color-success-soft: #ccfbf1;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fee2e2;
+  --color-accent: #0f5cc0;
+  --color-accent-soft: #e0edff;
+  --radius-card: 1rem;
+  --shadow-panel: 0 24px 60px -32px rgba(17, 25, 40, 0.32);
+}
+
+:root {
+  --app-shell-gradient:
+    radial-gradient(circle at top left, rgba(15, 92, 192, 0.08), transparent 38%),
+    radial-gradient(circle at bottom right, rgba(17, 25, 40, 0.08), transparent 42%);
+}
+
+body {
+  background:
+    linear-gradient(180deg, rgba(245, 247, 250, 0.96), rgba(255, 255, 255, 0.98)),
+    var(--app-shell-gradient);
+  color: var(--color-primary);
+}

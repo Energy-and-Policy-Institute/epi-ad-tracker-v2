@@ -1,0 +1,15 @@
+{
+  "name": "@repo/eslint-config",
+  "private": true,
+  "exports": {
+    "./base": "./base.cjs",
+    "./next": "./next.cjs"
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.29.0",
+    "@typescript-eslint/parser": "^8.29.0"
+  },
+  "peerDependencies": {
+    "eslint": "^8.57.1"
+  }
+}

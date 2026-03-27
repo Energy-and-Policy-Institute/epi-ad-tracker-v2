@@ -1,6 +1,17 @@
-import { Card } from "@repo/ui";
+"use client";
+
+import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import { fadeBlurItem, fadeBlurItemTransition } from "@/lib/motion";
 
 export function DataTableShell({ children }: { children: ReactNode }) {
-  return <Card className="overflow-hidden border-none bg-white/95 shadow-sm">{children}</Card>;
+  return (
+    <motion.div
+      className="overflow-hidden rounded-lg border border-border"
+      variants={fadeBlurItem}
+      transition={fadeBlurItemTransition}
+    >
+      {children}
+    </motion.div>
+  );
 }

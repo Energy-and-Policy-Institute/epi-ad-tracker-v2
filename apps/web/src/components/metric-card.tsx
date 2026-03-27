@@ -1,4 +1,7 @@
-import { Card, CardContent } from "@repo/ui";
+"use client";
+
+import { motion } from "framer-motion";
+import { fadeBlurItem, fadeBlurItemTransition } from "@/lib/motion";
 
 export function MetricCard({
   label,
@@ -8,13 +11,13 @@ export function MetricCard({
   value: string;
 }) {
   return (
-    <Card className="border-none bg-white/95 shadow-sm">
-      <CardContent className="flex flex-col gap-2 p-5">
-        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary">
-          {label}
-        </span>
-        <span className="text-2xl font-semibold text-primary">{value}</span>
-      </CardContent>
-    </Card>
+    <motion.div
+      className="flex flex-col gap-1"
+      variants={fadeBlurItem}
+      transition={fadeBlurItemTransition}
+    >
+      <span className="text-2xl font-semibold tracking-tight text-primary">{value}</span>
+      <span className="text-xs font-medium text-secondary">{label}</span>
+    </motion.div>
   );
 }

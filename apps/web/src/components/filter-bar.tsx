@@ -1,9 +1,16 @@
-import * as React from "react";
+"use client";
+
+import { motion } from "framer-motion";
+import { fadeBlurItem, fadeBlurItemTransition } from "@/lib/motion";
 
 export function FilterBar({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-4 rounded-[var(--radius-card)] border border-border bg-white/90 p-5 shadow-sm lg:flex-row lg:items-end lg:justify-between">
+    <motion.div
+      className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"
+      variants={fadeBlurItem}
+      transition={fadeBlurItemTransition}
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }

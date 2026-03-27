@@ -14,7 +14,7 @@ export default async function HomePage() {
   return (
     <AppShell
       title="Meta Ad Tracker"
-      description="Browse all front groups, slice the Meta ad data by date, and export the view you are looking at without leaving the page."
+      description="Browse front groups, filter by date, and export ad spend data."
     >
       <HydrateClient>
         <HomeDashboard />

@@ -30,7 +30,7 @@ export default async function FrontGroupPage({
   return (
     <AppShell
       title={frontGroup.name}
-      description="A parity-focused detail page for regional spend, exportable ads, and the highest-spend creative carousel."
+      description="Regional spend breakdown and highest-spend ad carousel."
     >
       <HydrateClient>
         <FrontGroupDetail frontGroupId={id} staticName={frontGroup.name} />

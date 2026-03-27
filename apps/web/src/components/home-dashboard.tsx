@@ -1,12 +1,14 @@
 "use client";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowUpDown, Download, RotateCcw } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpDown, Download, RotateCcw, Search } from "lucide-react";
 import Link from "next/link";
 import { useDeferredValue, useMemo, useState } from "react";
 import {
   Button,
   Input,
+  Separator,
   Table,
   TableBody,
   TableCell,
@@ -16,7 +18,12 @@ import {
 } from "@repo/ui";
 import { DEFAULT_END_DATE, DEFAULT_START_DATE } from "@/lib/date-range";
 import { convertToCsv, downloadCsv } from "@/lib/csv";
-import { toCompactCurrency } from "@/lib/format";
+import { formatCurrencyCompact, formatDateShort, formatNumber } from "@/lib/format";
+import {
+  staggerContainer,
+  subtleFade,
+  subtleFadeTransition
+} from "@/lib/motion";
 import { useTRPC } from "@/trpc/client";
 import { DataTableShell } from "./data-table";
 import { DateInput } from "./date-input";
@@ -75,6 +82,7 @@ export function HomeDashboard() {
     0
   );
   const datesDiffer = startDate !== DEFAULT_START_DATE || endDate !== DEFAULT_END_DATE;
+  const yearsDiffer = startDate.slice(0, 4) !== endDate.slice(0, 4);
 
   const handleSort = (nextSortBy: SortKey) => {
     if (nextSortBy === sortBy) {
@@ -87,43 +95,71 @@ export function HomeDashboard() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <section className="grid gap-4 md:grid-cols-3">
-        <MetricCard label="All Groups" value={String(sortedFrontGroups.length)} />
-        <MetricCard label="Total Spend" value={`$${toCompactCurrency(totalSpendUpper)}`} />
-        <MetricCard label="Date Window" value={`${startDate} to ${endDate}`} />
-      </section>
+    <motion.div
+      className="flex flex-col gap-8"
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+    >
+      <motion.section
+        className="flex flex-wrap gap-10"
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+      >
+        <MetricCard label="Groups" value={String(sortedFrontGroups.length)} />
+        <MetricCard label="Total Spend" value={formatCurrencyCompact(totalSpendUpper)} />
+        <MetricCard label="Date Window" value={`${formatDateShort(startDate, { showYear: yearsDiffer })} — ${formatDateShort(endDate, { showYear: yearsDiffer })}`} />
+      </motion.section>
+
+      <Separator />
 
       <FilterBar>
-        <div className="flex flex-1 flex-col gap-4 lg:flex-row lg:items-end">
-          <label className="flex min-w-64 flex-1 flex-col gap-2 text-sm font-medium text-secondary">
-            <span>Search front groups</span>
-            <Input
-              placeholder="Type a utility or organization name"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
+        <div className="flex flex-1 flex-col gap-3 lg:flex-row lg:items-end">
+          <label className="flex min-w-56 flex-1 flex-col gap-1.5 text-xs font-medium text-secondary">
+            Search
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                className="pl-8"
+                placeholder="Type a name..."
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </div>
           </label>
-          <DateInput label="Start date" value={startDate} onChange={setStartDate} />
-          <DateInput label="End date" value={endDate} onChange={setEndDate} />
+          <DateInput label="Start" value={startDate} onChange={setStartDate} />
+          <DateInput label="End" value={endDate} onChange={setEndDate} />
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          {datesDiffer ? (
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                setStartDate(DEFAULT_START_DATE);
-                setEndDate(DEFAULT_END_DATE);
-              }}
-            >
-              <RotateCcw className="h-4 w-4" />
-              Reset dates
-            </Button>
-          ) : null}
+        <div className="flex items-center gap-2">
+          <AnimatePresence>
+            {datesDiffer ? (
+              <motion.div
+                variants={subtleFade}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={subtleFadeTransition}
+              >
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setStartDate(DEFAULT_START_DATE);
+                    setEndDate(DEFAULT_END_DATE);
+                  }}
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  Reset
+                </Button>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
           <Button
             type="button"
             variant="outline"
+            size="sm"
             onClick={() =>
               downloadCsv(
                 convertToCsv(frontGroups, ["regionalBreakdown", "id"]),
@@ -131,8 +167,8 @@ export function HomeDashboard() {
               )
             }
           >
-            <Download className="h-4 w-4" />
-            Export CSV
+            <Download className="h-3.5 w-3.5" />
+            Export
           </Button>
         </div>
       </FilterBar>
@@ -140,39 +176,43 @@ export function HomeDashboard() {
       <DataTableShell>
         <Table>
           <TableHeader>
-            <TableRow className="bg-backgroundLight/70">
+            <TableRow>
               <SortableHead onClick={() => handleSort("rank")} title="Rank" />
               <SortableHead onClick={() => handleSort("status")} title="Status" />
               <SortableHead onClick={() => handleSort("name")} title="Name" />
               <SortableHead onClick={() => handleSort("numAds")} title="Ads" />
-              <SortableHead onClick={() => handleSort("adSpend")} title="Money spent" />
+              <SortableHead onClick={() => handleSort("adSpend")} title="Spend" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {sortedFrontGroups.map((frontGroup) => (
               <TableRow key={frontGroup.id}>
-                <TableCell className="text-center text-secondary">{frontGroup.rank}</TableCell>
-                <TableCell>
+                <TableCell className="w-16 text-center text-secondary">
+                  {frontGroup.rank}
+                </TableCell>
+                <TableCell className="w-24">
                   <StatusChip active={frontGroup.active} />
                 </TableCell>
                 <TableCell>
                   <Link
                     href={`/frontgroup/${encodeURIComponent(frontGroup.id)}`}
-                    className="font-medium text-accent transition-colors hover:text-accent/80 hover:underline"
+                    className="font-medium text-primary transition-colors hover:text-accent"
                   >
                     {frontGroup.name}
                   </Link>
                 </TableCell>
-                <TableCell className="text-center text-secondary">{frontGroup.numAds}</TableCell>
+                <TableCell className="w-20 text-center text-secondary">
+                  {frontGroup.numAds}
+                </TableCell>
                 <TableCell className="text-secondary">
-                  ${frontGroup.adSpendLower} - ${frontGroup.adSpendUpper}
+                  ${formatNumber(frontGroup.adSpendLower)} – ${formatNumber(frontGroup.adSpendUpper)}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </DataTableShell>
-    </div>
+    </motion.div>
   );
 }
 
@@ -181,11 +221,11 @@ function SortableHead({ onClick, title }: { onClick: () => void; title: string }
     <TableHead>
       <button
         type="button"
-        className="inline-flex items-center gap-2 text-left"
+        className="inline-flex items-center gap-1.5 text-left transition-colors hover:text-primary"
         onClick={onClick}
       >
         {title}
-        <ArrowUpDown className="h-3.5 w-3.5" />
+        <ArrowUpDown className="h-3 w-3" />
       </button>
     </TableHead>
   );

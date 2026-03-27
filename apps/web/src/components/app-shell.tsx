@@ -1,5 +1,8 @@
-import { Card } from "@repo/ui";
-import * as React from "react";
+"use client";
+
+import { motion } from "framer-motion";
+import { Separator } from "@repo/ui";
+import { blurFadeVariants, blurFadeTransition } from "@/lib/motion";
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -9,20 +12,25 @@ type AppShellProps = {
 
 export function AppShell({ children, description, title }: AppShellProps) {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-8 md:px-8">
-      <Card className="overflow-hidden border-none bg-primary px-8 py-10 text-white shadow-[0_35px_80px_-40px_rgba(17,25,40,0.75)]">
-        <div className="flex flex-col gap-3">
-          <span className="text-xs font-semibold uppercase tracking-[0.28em] text-white/65">
-            Energy & Policy Institute
-          </span>
-          <h1 className="max-w-3xl text-4xl font-semibold tracking-tight md:text-5xl">
-            {title}
-          </h1>
-          <p className="max-w-2xl text-sm leading-7 text-white/70 md:text-base">
-            {description}
-          </p>
-        </div>
-      </Card>
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 px-4 py-12 md:px-8">
+      <motion.header
+        className="flex flex-col gap-3"
+        variants={blurFadeVariants}
+        initial="initial"
+        animate="animate"
+        transition={blurFadeTransition}
+      >
+        <span className="text-xs font-medium uppercase tracking-widest text-secondary">
+          Energy & Policy Institute
+        </span>
+        <h1 className="text-3xl font-semibold tracking-tight text-primary">
+          {title}
+        </h1>
+        <p className="max-w-xl text-sm leading-relaxed text-secondary">
+          {description}
+        </p>
+      </motion.header>
+      <Separator />
       {children}
     </main>
   );

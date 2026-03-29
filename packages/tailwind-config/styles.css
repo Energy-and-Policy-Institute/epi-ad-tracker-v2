@@ -32,3 +32,17 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
 }
+
+:where(
+  a[href],
+  button:not(:disabled),
+  summary,
+  select,
+  input[type="button"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="reset"]:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  label[for]
+) {
+  cursor: pointer;
+}

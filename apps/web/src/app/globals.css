@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "@repo/tailwind-config/styles.css";
+
+@source "../";
+@source "../../../../packages/ui/src";
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

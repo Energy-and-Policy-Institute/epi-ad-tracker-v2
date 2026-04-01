@@ -1,0 +1,48 @@
+@theme {
+  --color-background: #fafafa;
+  --color-foreground: #0a0a0a;
+  --color-primary: #171717;
+  --color-primary-foreground: #fafafa;
+  --color-secondary: #6b7280;
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #a1a1aa;
+  --color-border: #e4e4e7;
+  --color-input: #e4e4e7;
+  --color-ring: #a1a1aa;
+
+  --color-accent: #6366f1;
+  --color-accent-soft: #eef2ff;
+  --color-accent-foreground: #ffffff;
+
+  --color-success: #10b981;
+  --color-success-soft: #ecfdf5;
+  --color-danger: #ef4444;
+  --color-danger-soft: #fef2f2;
+
+  --color-surface: #ffffff;
+  --color-backgroundLight: #f4f4f5;
+  --color-backgroundDark: #d4d4d8;
+  --color-reset: #6366f1;
+
+  --radius-card: 0.5rem;
+  --shadow-panel: none;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+:where(
+  a[href],
+  button:not(:disabled),
+  summary,
+  select,
+  input[type="button"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="reset"]:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  label[for]
+) {
+  cursor: pointer;
+}

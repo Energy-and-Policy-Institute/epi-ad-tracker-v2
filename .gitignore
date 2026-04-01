@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+**/node_modules
 /.pnp
 .pnp.js
 
@@ -9,13 +10,15 @@
 /coverage
 
 # database
-/prisma/db.sqlite
-/prisma/db.sqlite-journal
+packages/db/prisma/*.sqlite
+packages/db/prisma/*.sqlite-journal
 
 # next.js
 /.next/
 /out/
 next-env.d.ts
+apps/*/.next/
+apps/*/next-env.d.ts
 
 # production
 /build
@@ -23,12 +26,16 @@ next-env.d.ts
 # misc
 .DS_Store
 *.pem
+__pycache__/
+.pytest_cache/
+.venv/
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.pyc
 
 # local env files
 # do not commit any .env files to git, except for the .env.example file. https://create.t3.gg/en/usage/env-variables#using-environment-variables
@@ -37,6 +44,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+.turbo
 
 # typescript
 *.tsbuildinfo

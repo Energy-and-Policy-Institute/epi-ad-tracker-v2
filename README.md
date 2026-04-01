@@ -1,28 +1,57 @@
-# Create T3 App
+# EPI Ad Tracker Monorepo
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This repository now runs as a `pnpm` + Turborepo workspace with the legacy web app preserved alongside the new App Router app and the extracted Python data-pull service.
 
-## What's next? How do I make an app with this?
+## Structure
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- `apps/legacy-web`: the preserved Pages Router application and compatibility cron/API surface
+- `apps/web`: the new Next.js 16 App Router application
+- `apps/meta-fetcher`: the Python Meta Ads Archive puller and sync CLI
+- `packages/api`: shared tRPC v11 routers, context, and server callers
+- `packages/db`: shared Prisma schema/client helpers
+- `packages/ui`: shared UI primitives
+- `packages/tailwind-config`: shared Tailwind v4 theme layer
+- `packages/eslint-config`, `packages/typescript-config`: shared workspace configuration
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Workspace Commands
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+```bash
+pnpm install
+pnpm dev
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm test
+```
 
-## Learn More
+## App Commands
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+Legacy web:
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+```bash
+pnpm --filter legacy-web dev
+```
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+New web app:
 
-## How do I deploy this?
+```bash
+pnpm --filter web dev
+```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+Meta fetcher:
+
+```bash
+PYTHONPATH=apps/meta-fetcher/src python3 -m meta_fetcher.cli fetch
+```
+
+If `uv` is available:
+
+```bash
+uv run --directory apps/meta-fetcher meta-fetcher fetch
+```
+
+## Notes
+
+- `apps/web` is the primary new frontend surface.
+- `apps/legacy-web` remains runnable for fallback and operational compatibility.
+- `apps/meta-fetcher` preserves the current EC2 + SSM + S3 data-pull behavior while removing the Python logic from the old `SCRIPTS/` surface.

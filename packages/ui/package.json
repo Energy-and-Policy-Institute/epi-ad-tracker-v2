@@ -1,0 +1,41 @@
+{
+  "name": "@repo/ui",
+  "private": true,
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@radix-ui/react-popover": "^1.1.15",
+    "@radix-ui/react-slot": "^1.1.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.487.0",
+    "react-day-picker": "^9",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^8.57.1"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "dev": "tsc --project tsconfig.build.json --watch",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint --max-warnings=0 --ext .ts,.tsx src",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  }
+}

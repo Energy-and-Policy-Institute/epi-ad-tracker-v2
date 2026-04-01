@@ -1,0 +1,46 @@
+{
+  "name": "web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prebuild": "pnpm --filter @repo/ui build",
+    "predev": "pnpm --filter @repo/ui build",
+    "build": "next build",
+    "dev": "vercel env pull ${VERCEL_ENV_FILE:-.env} ${VERCEL_TOKEN:+--token $VERCEL_TOKEN} && next dev -p 3001",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint --max-warnings=0 --ext .ts,.tsx src",
+    "pretypecheck": "pnpm --filter @repo/ui build",
+    "start": "next start",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@repo/api": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/tailwind-config": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@tanstack/react-query": "^5.66.11",
+    "@trpc/client": "^11.0.0",
+    "@trpc/react-query": "^11.0.0",
+    "@trpc/server": "^11.0.0",
+    "@trpc/tanstack-react-query": "^11.0.0",
+    "@vercel/analytics": "^1.4.1",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^0.487.0",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-day-picker": "^9",
+    "react-dom": "^19.0.0",
+    "superjson": "^2.2.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.4",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "eslint": "^8.57.1",
+    "tailwindcss": "^4.1.4"
+  }
+}

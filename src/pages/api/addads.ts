@@ -1,13 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { db } from '~/server/db'
+import type { PrismaPromise } from '@prisma/client'
 import { InputPythonRowSchema as AdSchema } from 'types'
-import { turnOffMachine } from '~/server/functions'
-import { PrismaPromise } from '@prisma/client'
+import { env } from '~/env'
+import { db } from '~/server/db'
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  if (
+    env.INGEST_API_SECRET &&
+    req.headers.authorization !== `Bearer ${env.INGEST_API_SECRET}`
+  ) {
+    res.status(401).json({ message: 'Unauthorized' })
+    return
+  }
+
   if (req.method === 'POST') {
     let ads = []
 
@@ -44,59 +52,53 @@ export default async function handler(
     }
 
     try {
-      // Fetch all existing ads in a single query
-      const existingAds = await db.ad.findMany({
-        where: {
-          id: {
-            in: ads.map((ad) => ad.id),
+      const frontGroups = new Map(
+        ads.map((ad) => [
+          ad.page_id,
+          {
+            pageId: ad.page_id,
+            pageName: ad.page_name,
           },
-        },
-      })
+        ]),
+      )
 
-      const existingAdsMap = new Map(existingAds.map((ad) => [ad.id, ad]))
-
-      const transactionOperations = ads
-        .map((ad) => {
-          const existingAd = existingAdsMap.get(ad.id)
-
-          // update the front group
-          void db.frontGroup.upsert({
-            where: { id: ad.page_id },
+      const transactionOperations: PrismaPromise<unknown>[] = [
+        ...Array.from(frontGroups.values()).map((frontGroup) =>
+          db.frontGroup.upsert({
+            where: { id: frontGroup.pageId },
             update: {
+              name: frontGroup.pageName,
               updatedAt: new Date(),
             },
             create: {
-              id: ad.page_id,
-              updatedAt: new Date(), // this is the only data that matters
-              name: ad.page_name,
+              id: frontGroup.pageId,
+              updatedAt: new Date(),
+              name: frontGroup.pageName,
               numAds: 0,
               adSpendUpper: 0,
               adSpendLower: 0,
             },
-          })
+          }),
+        ),
+        ...ads.map((ad) =>
+          db.ad.upsert({
+            where: { id: ad.id },
+            create: ad,
+            update: ad,
+          }),
+        ),
+      ]
 
-          if (!existingAd) {
-            return db.ad.create({ data: ad })
-          } else if (existingAd.ad_screenshot_url !== ad.ad_screenshot_url) {
-            return db.ad.update({ where: { id: ad.id }, data: ad })
-          } else {
-            return null
-          }
-        })
-        .filter(Boolean) // Filter out null operations
-
-      await db.$transaction(transactionOperations as PrismaPromise<unknown>[]) // make the types line up
+      await db.$transaction(transactionOperations)
 
       console.log('Rows added successfully')
 
       // Respond to the client with the fetched data
       res.status(200).json({ message: 'Rows added successfully' })
-      // await turnOffMachine()
     } catch (error) {
       // Handle errors, log them, or send an appropriate response
       console.error('Error:', error)
       res.status(500).json({ error: 'Internal Server Error' })
-      // await turnOffMachine()
     }
   } else {
     // Respond to non-POST requests with a 405 Method Not Allowed status

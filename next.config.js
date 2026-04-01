@@ -13,6 +13,12 @@ const config = {
       'epi-ad-screenshot.s3.us-east-2.amazonaws.com',
       'i5.walmartimages.com',
     ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.public.blob.vercel-storage.com',
+      },
+    ],
   },
 
   /**

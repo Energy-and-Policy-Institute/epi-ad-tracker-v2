@@ -17,12 +17,7 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(['development', 'test', 'production'])
       .default('development'),
-    META_ACCESS_TOKEN: z.string(),
-    AWS_SECRET_ACCESS_KEY: z.string(),
-    AWS_ACCESS_KEY_ID: z.string(),
-    REGION: z.string(),
-    INSTANCE_ID: z.string(),
-    CRON_SECRET: z.string(),
+    INGEST_API_SECRET: z.string().optional(),
   },
 
   /**
@@ -39,14 +34,9 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    CRON_SECRET: process.env.CRON_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
+    INGEST_API_SECRET: process.env.INGEST_API_SECRET,
     NODE_ENV: process.env.NODE_ENV,
-    META_ACCESS_TOKEN: process.env.META_ACCESS_TOKEN,
-    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
-    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
-    REGION: process.env.REGION,
-    INSTANCE_ID: process.env.INSTANCE_ID,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

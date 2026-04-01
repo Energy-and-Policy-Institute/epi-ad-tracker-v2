@@ -1,10 +1,6 @@
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { api } from '~/utils/api'
-import { faDownload, faSort } from '@fortawesome/free-solid-svg-icons'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { type FrontGroup } from 'types'
 import dayjs from 'dayjs'
 import {
   DatePicker,
@@ -13,7 +9,6 @@ import {
   HeaderItem,
   convertToCSV,
 } from '~/components/common'
-import { withCommas } from '~/utils/functions'
 
 type SortOptions = 'rank' | 'status' | 'name' | 'numAds' | 'adSpend'
 const defaultStartDate = '2018-05-24'
@@ -28,19 +23,6 @@ const Home = () => {
       endDate,
     })
 
-  const startMachine = async () => {
-    await fetch('/api/startfetchermachine')
-  }
-
-  const stopMachine = async () => {
-    await fetch('/api/stopfetchermachine')
-  }
-
-  const runScript = async () => {
-    await fetch('/api/metafetch')
-  }
-
-  const totalAds = frontGroups?.reduce((acc, curr) => acc + curr.numAds, 0)
   const totalSpendUpper = frontGroups?.reduce(
     (acc, curr) => acc + curr.adSpendUpper,
     0,

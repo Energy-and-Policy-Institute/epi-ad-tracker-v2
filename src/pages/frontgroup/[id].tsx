@@ -16,6 +16,7 @@ import dayjs from 'dayjs'
 import { withCommas } from '~/utils/functions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import { getAdScreenshotSrc } from '~/utils/ad-screenshot'
 
 type SortOptions = 'state' | 'spend'
 
@@ -116,7 +117,7 @@ const Page = () => {
   }
 
   const [adShown, setAdShown] = useState(0)
-  const adUrl = tenMost?.[adShown]?.ad_screenshot_url
+  const adUrl = getAdScreenshotSrc(tenMost?.[adShown])
   const resetDates = () => {
     setStartDate(defaultStartDate)
     setEndDate(defaultEndDate)

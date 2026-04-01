@@ -1,15 +1,19 @@
-import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
+import type { inferRouterOutputs } from '@trpc/server'
 import { z } from 'zod'
-import { AppRouter } from '~/server/api/root'
+import type { AppRouter } from '~/server/api/root'
 
-type RouterInput = inferRouterInputs<AppRouter>
 type RouterOutput = inferRouterOutputs<AppRouter>
 
 // this is from the zod docs
 // https://zod.dev/?id=transform
-const numberInString = (float = false) =>
-  z.string().transform((val, ctx) => {
-    const parsed = float ? parseFloat(val) : parseInt(val)
+const numberLike = (float = false) =>
+  z.union([z.string(), z.number()]).transform((val, ctx) => {
+    const parsed =
+      typeof val === 'number'
+        ? val
+        : float
+          ? parseFloat(val)
+          : parseInt(val, 10)
     if (isNaN(parsed)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -38,7 +42,7 @@ export const RegionalBreakdownSchema = z
 export type RegionalBreakdown = z.infer<typeof RegionalBreakdownSchema>
 
 export const RawAdRegionItem = z.object({
-  percentage: numberInString(true),
+  percentage: numberLike(true),
   region: z.string(),
 })
 
@@ -48,7 +52,7 @@ export const AdRegionItem = z.object({
 })
 
 const DemographicDistributionSchema = z.object({
-  percentage: numberInString(true),
+  percentage: numberLike(true),
   age: z.string(),
   gender: z.string(),
 })
@@ -69,12 +73,12 @@ export const InputPythonRowSchema = z.object({
   ad_creative_link_titles: z.string().array().nullish(),
   page_name: z.string(),
   page_id: z.string(),
-  impressions_lower_bound: numberInString().nullish(),
-  impressions_upper_bound: numberInString().nullish(),
-  spend_lower_bound: z.number(),
-  spend_upper_bound: z.number(),
-  ad_start_month: z.number(),
-  ad_start_year: z.number(),
+  impressions_lower_bound: numberLike().nullish(),
+  impressions_upper_bound: numberLike().nullish(),
+  spend_lower_bound: numberLike(),
+  spend_upper_bound: numberLike(),
+  ad_start_month: numberLike(),
+  ad_start_year: numberLike(),
   ad_screenshot_url: z.string().optional(),
 })
 

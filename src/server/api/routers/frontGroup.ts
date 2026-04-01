@@ -92,7 +92,6 @@ export const frontGroupRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const ads = await ctx.db.ad.findMany({
         where: {
-          ad_screenshot_url: { not: 'null' },
           page_id: input.frontGroupId,
         },
         orderBy: { spend_upper_bound: 'desc' },
@@ -101,11 +100,15 @@ export const frontGroupRouter = createTRPCRouter({
 
       const includeLargestRegion = ads.map((a) => {
         const deliveryByRegion = AdRegionItem.array().parse(
-          a.delivery_by_region,
+          a.delivery_by_region ?? [],
         )
-        const largestRegion = deliveryByRegion.reduce((acc, curr) => {
-          return acc.percentage > curr.percentage ? acc : curr
-        })
+        const largestRegion =
+          deliveryByRegion.reduce(
+            (acc, curr) => {
+              return acc.percentage > curr.percentage ? acc : curr
+            },
+            { percentage: 0, region: 'Unknown' },
+          ) ?? { percentage: 0, region: 'Unknown' }
         return { ...a, largestRegion }
       })
       return includeLargestRegion
@@ -125,14 +128,6 @@ export const frontGroupRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const ads2 = await ctx.db.ad.findMany({
-        select: {
-          id: true,
-          page_id: true,
-          page_name: true,
-        },
-      })
-
       const ads = await ctx.db.ad.findMany({
         where: { page_id: input.frontGroupId },
         select: {
@@ -255,42 +250,6 @@ export const frontGroupRouter = createTRPCRouter({
     return ad
   }),
 })
-
-type RankDictionary = Record<string, number>
-
-const ids = [
-  '106039214814684',
-  '102281724942742',
-  '738063612887865',
-  '341751646428117',
-  '591566840920364',
-  '105502284969626',
-  '49560242814',
-  '101691091213750',
-  '292970844058835',
-  '100801038449520',
-  '108095672108380',
-  '111394533709201',
-  '107500120800840',
-  '101242238726088',
-  '237209147160346',
-  '110124925319299',
-  '396341921119746',
-  '108203188195224',
-  '106656845034469',
-  '47710973068',
-  '482100658584410',
-]
-
-const rankDictionary: RankDictionary = ids.reduce<RankDictionary>(
-  (acc, id, index) => {
-    acc[id] = index + 1 // ranks start at 1
-    return acc
-  },
-  {},
-)
-
-const getRank = (id: string) => rankDictionary[id] ?? 0
 
 const adDatesWithinRange = (
   adStartDate: string,

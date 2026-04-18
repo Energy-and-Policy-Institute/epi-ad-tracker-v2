@@ -1,8 +1,7 @@
-import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Button } from "@repo/ui";
+import { Suspense } from "react";
+import { Skeleton } from "@repo/ui";
 import { AppShell } from "@/components/app-shell";
 import { caller } from "@/trpc/server";
 
@@ -14,6 +13,21 @@ export default async function AdPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  return (
+    <AppShell
+      backHref="/ads"
+      title="Ad Detail"
+      description="Individual ad detail view."
+    >
+      <Suspense fallback={<AdDetailFallback />}>
+        <AdDetail id={id} />
+      </Suspense>
+    </AppShell>
+  );
+}
+
+async function AdDetail({ id }: { id: string }) {
   const ad = await caller.frontGroup.ad(id);
 
   if (!ad) {
@@ -21,27 +35,32 @@ export default async function AdPage({
   }
 
   return (
-    <AppShell
-      title={ad.page_name}
-      description="Individual ad detail view."
-    >
-      <div className="flex flex-col gap-6">
-        <Button asChild variant="ghost" size="sm" className="w-fit">
-          <Link href="/ads">
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Back to ads
-          </Link>
-        </Button>
-        <div className="overflow-hidden rounded-lg border border-border bg-muted">
-          <Image
-            alt="Ad screenshot"
-            className="h-auto w-full object-contain"
-            height={960}
-            src={ad.ad_screenshot_url}
-            width={960}
-          />
-        </div>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <h2 className="font-display text-xl font-semibold text-primary">{ad.page_name}</h2>
+        <p className="text-sm text-secondary">Screenshot and detail view for this advertisement.</p>
       </div>
-    </AppShell>
+      <div className="overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface-muted shadow-[var(--shadow-panel)]">
+        <Image
+          alt="Ad screenshot"
+          className="h-auto w-full object-contain"
+          height={960}
+          src={ad.ad_screenshot_url}
+          width={960}
+        />
+      </div>
+    </div>
+  );
+}
+
+function AdDetailFallback() {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <Skeleton className="h-7 w-48" />
+        <Skeleton className="h-4 w-72" />
+      </div>
+      <Skeleton className="h-[28rem] w-full rounded-lg" />
+    </div>
   );
 }

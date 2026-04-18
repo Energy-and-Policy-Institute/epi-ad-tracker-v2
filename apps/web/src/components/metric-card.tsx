@@ -12,12 +12,16 @@ export function MetricCard({
 }) {
   return (
     <motion.div
-      className="flex flex-col gap-1"
+      className="flex min-w-40 flex-1 flex-col gap-0.5 rounded-[var(--radius-card)] border border-border bg-surface px-5 py-4 shadow-[var(--shadow-panel)]"
       variants={fadeBlurItem}
       transition={fadeBlurItemTransition}
     >
-      <span className="text-2xl font-semibold tracking-tight text-primary">{value}</span>
-      <span className="text-xs font-medium text-secondary">{label}</span>
+      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-secondary">
+        {label}
+      </span>
+      <span className="font-display text-[1.6rem] font-semibold tracking-tight text-primary">
+        {value}
+      </span>
     </motion.div>
   );
 }

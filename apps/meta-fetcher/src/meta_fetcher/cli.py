@@ -58,6 +58,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         help="Number of records to POST to the API in each batch.",
     )
+    fetch_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Fetch and process data but skip posting to the API and taking screenshots.",
+    )
 
     return parser
 
@@ -79,7 +85,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     page_ids = args.page_ids or DEFAULT_PAGE_IDS
 
-    run_fetch(settings, page_ids=page_ids)
+    run_fetch(settings, page_ids=page_ids, dry_run=args.dry_run)
     return 0
 
 

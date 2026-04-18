@@ -221,7 +221,8 @@ export const frontGroupRouter = createTRPCRouter({
           adDeliveryStopTime: ad.ad_delivery_stop_time,
           spendLowerBound: ad.spend_lower_bound,
           spendUpperBound: ad.spend_upper_bound,
-          adBlurb: ad.ad_creative_bodies.join(" ")
+          adBlurb: ad.ad_creative_bodies.join(" "),
+          deliveryByRegion: AdRegionItem.array().parse(ad.delivery_by_region)
         }))
       };
     }),

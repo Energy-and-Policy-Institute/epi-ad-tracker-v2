@@ -1,7 +1,8 @@
 import { AppShell } from "@/components/app-shell";
-import { HomeDashboard } from "@/components/home-dashboard";
+import { HomeDashboard, HomeDashboardFallback } from "@/components/home-dashboard";
 import { DEFAULT_END_DATE, DEFAULT_START_DATE } from "@/lib/date-range";
 import { api, HydrateClient } from "@/trpc/server";
+import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,9 @@ export default async function HomePage() {
       description="Browse front groups, filter by date, and export ad spend data."
     >
       <HydrateClient>
-        <HomeDashboard />
+        <Suspense fallback={<HomeDashboardFallback />}>
+          <HomeDashboard />
+        </Suspense>
       </HydrateClient>
     </AppShell>
   );

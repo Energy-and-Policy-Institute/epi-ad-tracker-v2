@@ -1,6 +1,11 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { AppShell } from "@/components/app-shell";
-import { FrontGroupDetail } from "@/components/frontgroup-detail";
+import {
+  FrontGroupDetail,
+  FrontGroupMeta,
+  FrontGroupMetaFallback
+} from "@/components/frontgroup-detail";
 import { DEFAULT_END_DATE, DEFAULT_START_DATE } from "@/lib/date-range";
 import { api, caller, HydrateClient } from "@/trpc/server";
 
@@ -28,13 +33,19 @@ export default async function FrontGroupPage({
   });
 
   return (
-    <AppShell
-      title={frontGroup.name}
-      description="Regional spend breakdown and highest-spend ad carousel."
-    >
-      <HydrateClient>
+    <HydrateClient>
+      <AppShell
+        backHref="/"
+        title={frontGroup.name}
+        description="Regional spend breakdown and highest-spend ad carousel."
+        headerContent={
+          <Suspense fallback={<FrontGroupMetaFallback staticName={frontGroup.name} />}>
+            <FrontGroupMeta frontGroupId={id} staticName={frontGroup.name} />
+          </Suspense>
+        }
+      >
         <FrontGroupDetail frontGroupId={id} staticName={frontGroup.name} />
-      </HydrateClient>
-    </AppShell>
+      </AppShell>
+    </HydrateClient>
   );
 }

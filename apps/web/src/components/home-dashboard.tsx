@@ -8,6 +8,7 @@ import { useDeferredValue, useMemo, useState } from "react";
 import {
   Button,
   Input,
+  Skeleton,
   Separator,
   Table,
   TableBody,
@@ -102,7 +103,7 @@ export function HomeDashboard() {
       animate="animate"
     >
       <motion.section
-        className="flex flex-wrap gap-10"
+        className="flex flex-wrap gap-3"
         variants={staggerContainer}
         initial="initial"
         animate="animate"
@@ -111,8 +112,6 @@ export function HomeDashboard() {
         <MetricCard label="Total Spend" value={formatCurrencyCompact(totalSpendUpper)} />
         <MetricCard label="Date Window" value={`${formatDateShort(startDate, { showYear: yearsDiffer })} — ${formatDateShort(endDate, { showYear: yearsDiffer })}`} />
       </motion.section>
-
-      <Separator />
 
       <FilterBar>
         <div className="flex flex-1 flex-col gap-3 lg:flex-row lg:items-end">
@@ -185,30 +184,45 @@ export function HomeDashboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedFrontGroups.map((frontGroup) => (
-              <TableRow key={frontGroup.id}>
-                <TableCell className="w-16 text-center text-secondary">
-                  {frontGroup.rank}
-                </TableCell>
-                <TableCell className="w-24">
-                  <StatusChip active={frontGroup.active} />
-                </TableCell>
-                <TableCell>
-                  <Link
-                    href={`/frontgroup/${encodeURIComponent(frontGroup.id)}`}
-                    className="font-medium text-primary transition-colors hover:text-accent"
+            {sortedFrontGroups.map((frontGroup) => {
+              const topTen = frontGroup.rank <= 10;
+              return (
+                <TableRow key={frontGroup.id}>
+                  <TableCell
+                    className={
+                      topTen
+                        ? "w-16 text-center font-semibold tabular-nums text-accent2"
+                        : "w-16 text-center tabular-nums text-tertiary"
+                    }
                   >
-                    {frontGroup.name}
-                  </Link>
-                </TableCell>
-                <TableCell className="w-20 text-center text-secondary">
-                  {frontGroup.numAds}
-                </TableCell>
-                <TableCell className="text-secondary">
-                  ${formatNumber(frontGroup.adSpendLower)} – ${formatNumber(frontGroup.adSpendUpper)}
-                </TableCell>
-              </TableRow>
-            ))}
+                    {frontGroup.rank}
+                  </TableCell>
+                  <TableCell className="w-24">
+                    <StatusChip active={frontGroup.active} />
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      href={`/frontgroup/${encodeURIComponent(frontGroup.id)}`}
+                      className="font-medium text-primary transition-colors hover:text-accent"
+                    >
+                      {frontGroup.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="w-20 text-center tabular-nums text-secondary">
+                    {frontGroup.numAds}
+                  </TableCell>
+                  <TableCell
+                    className={
+                      topTen
+                        ? "tabular-nums font-semibold text-accent2"
+                        : "tabular-nums text-secondary"
+                    }
+                  >
+                    ${formatNumber(frontGroup.adSpendLower)} – ${formatNumber(frontGroup.adSpendUpper)}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </DataTableShell>
@@ -228,5 +242,38 @@ function SortableHead({ onClick, title }: { onClick: () => void; title: string }
         <ArrowUpDown className="h-3 w-3" />
       </button>
     </TableHead>
+  );
+}
+
+export function HomeDashboardFallback() {
+  return (
+    <div className="flex flex-col gap-8">
+      <section className="flex flex-wrap gap-10">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div key={index} className="flex min-w-36 flex-col gap-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-8 w-28" />
+          </div>
+        ))}
+      </section>
+
+      <Separator />
+
+      <div className="flex flex-col gap-4 rounded-lg border border-border p-4">
+        <div className="flex flex-1 flex-col gap-3 lg:flex-row">
+          <Skeleton className="h-10 flex-1" />
+          <Skeleton className="h-10 w-full lg:w-40" />
+          <Skeleton className="h-10 w-full lg:w-40" />
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-lg border border-border">
+        <div className="space-y-3 p-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton key={index} className="h-10 w-full" />
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

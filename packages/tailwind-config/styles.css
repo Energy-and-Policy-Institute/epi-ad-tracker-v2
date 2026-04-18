@@ -1,34 +1,67 @@
 @theme {
-  --color-background: #fafafa;
-  --color-foreground: #0a0a0a;
-  --color-primary: #171717;
-  --color-primary-foreground: #fafafa;
-  --color-secondary: #6b7280;
-  --color-muted: #f4f4f5;
-  --color-muted-foreground: #a1a1aa;
-  --color-border: #e4e4e7;
-  --color-input: #e4e4e7;
-  --color-ring: #a1a1aa;
+  /* Base surfaces */
+  --color-background: #fafaf8;
+  --color-foreground: #1a1a18;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4f3f0;
 
-  --color-accent: #6366f1;
-  --color-accent-soft: #eef2ff;
+  /* Text hierarchy */
+  --color-primary: #1a1a18;
+  --color-primary-foreground: #fafaf8;
+  --color-secondary: #6b6a65;
+  --color-tertiary: #9c9b96;
+
+  /* Neutral UI tokens */
+  --color-muted: #f4f3f0;
+  --color-muted-foreground: #9c9b96;
+  --color-border: #e8e7e3;
+  --color-border-strong: #d3d1c7;
+  --color-input: #e8e7e3;
+  --color-ring: #185fa5;
+
+  /* Editorial blue (primary accent) */
+  --color-accent: #185fa5;
+  --color-accent-soft: #e6f1fb;
   --color-accent-foreground: #ffffff;
 
-  --color-success: #10b981;
-  --color-success-soft: #ecfdf5;
-  --color-danger: #ef4444;
-  --color-danger-soft: #fef2f2;
+  /* Warm orange (highlight / top-10 accent) */
+  --color-accent2: #d85a30;
+  --color-accent2-soft: #faece7;
+  --color-accent2-foreground: #ffffff;
 
-  --color-surface: #ffffff;
-  --color-backgroundLight: #f4f4f5;
-  --color-backgroundDark: #d4d4d8;
-  --color-reset: #6366f1;
+  /* Status */
+  --color-success: #1d9e75;
+  --color-success-soft: #e1f5ee;
+  --color-danger: #e24b4a;
+  --color-danger-soft: #fcebeb;
 
-  --radius-card: 0.5rem;
-  --shadow-panel: none;
+  /* Legacy alias kept in sync with new palette */
+  --color-backgroundLight: #f4f3f0;
+  --color-backgroundDark: #d3d1c7;
+  --color-reset: #185fa5;
+
+  --radius-card: 0.625rem;
+  --shadow-panel: 0 1px 2px rgba(26, 26, 24, 0.04);
+  --shadow-elevated: 0 8px 24px rgba(26, 26, 24, 0.08);
+
+  --font-display: "Fraunces", "Ambit", Georgia, serif;
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
+}
+
+:where(
+  a[href],
+  button:not(:disabled),
+  summary,
+  select,
+  input[type="button"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="reset"]:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  label[for]
+) {
+  cursor: pointer;
 }

@@ -167,7 +167,7 @@ def take_screenshot(url: str, destination: Path) -> None:
 def fetch_page_ads(page_id: str, settings: Settings) -> list[dict[str, Any]]:
     print(page_id)
     response = requests.get(
-        "https://graph.facebook.com/v5.0/ads_archive",
+        "https://graph.facebook.com/v22.0/ads_archive",
         params={
             "access_token": settings.access_token,
             "ad_type": "POLITICAL_AND_ISSUE_ADS",
@@ -361,11 +361,22 @@ def post_batches(frame: pd.DataFrame, settings: Settings) -> None:
                 print(f"Error: {exc}\n\n{json_payload}")
 
 
-def run_fetch(settings: Settings, *, page_ids: Iterable[str] = DEFAULT_PAGE_IDS) -> None:
+def run_fetch(
+    settings: Settings,
+    *,
+    page_ids: Iterable[str] = DEFAULT_PAGE_IDS,
+    dry_run: bool = False,
+) -> None:
     frame = build_dataframe(settings, page_ids)
     if frame.empty:
         print("No ad data returned from the Meta archive query.")
         return
 
     print_page_summary(frame)
+
+    if dry_run:
+        print(f"\n[DRY RUN] Skipping post. Would send {len(frame)} records in "
+              f"{max(len(frame) // settings.batch_size, 1)} batches to {settings.api_url}")
+        return
+
     post_batches(frame, settings)

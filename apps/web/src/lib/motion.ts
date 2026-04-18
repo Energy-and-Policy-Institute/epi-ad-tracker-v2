@@ -26,6 +26,7 @@ export const staggerContainer: Variants = {
 export const fadeBlurItem: Variants = {
   initial: { opacity: 0, filter: "blur(8px)", y: 16 },
   animate: { opacity: 1, filter: "blur(0px)", y: 0 },
+  exit: { opacity: 0, filter: "blur(8px)", y: -8 },
 };
 
 export const fadeBlurItemTransition: Transition = {

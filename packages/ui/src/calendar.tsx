@@ -22,16 +22,16 @@ function Calendar({
         caption_label: "text-sm font-medium",
         nav: "absolute inset-x-0 top-3 flex w-full items-center justify-between px-1",
         button_previous:
-          "inline-flex h-7 w-7 items-center justify-center rounded-md text-secondary hover:bg-muted hover:text-primary",
+          "inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-secondary hover:bg-muted hover:text-primary disabled:cursor-not-allowed",
         button_next:
-          "inline-flex h-7 w-7 items-center justify-center rounded-md text-secondary hover:bg-muted hover:text-primary",
+          "inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-secondary hover:bg-muted hover:text-primary disabled:cursor-not-allowed",
         weekdays: "flex",
         weekday:
           "w-8 text-center text-[0.8rem] font-normal text-muted-foreground",
         week: "mt-1 flex",
         day: "relative h-8 w-8 p-0 text-center text-sm",
         day_button:
-          "inline-flex h-8 w-8 items-center justify-center rounded-md font-normal transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring aria-selected:opacity-100",
+          "inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md font-normal transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring aria-selected:opacity-100 disabled:cursor-not-allowed",
         selected:
           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
         today: "bg-muted text-primary",

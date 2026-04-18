@@ -8,8 +8,30 @@
   color-scheme: light;
 }
 
+html,
 body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
   min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  font-family: var(--font-app-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }
